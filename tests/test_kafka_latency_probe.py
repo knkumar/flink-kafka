@@ -51,7 +51,7 @@ class KafkaLatencyProbeTests(unittest.TestCase):
 
             outputs = load_expected_outputs(path)
 
-        self.assertEqual(outputs, {"tc-1-0": ("e-1", "e-3")})
+        self.assertEqual(outputs, {"tc-1-0": {"source_ids": ("e-1", "e-3"), "window_end_ms": None}})
 
     def test_loads_input_records_with_topics(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -85,9 +85,9 @@ class KafkaLatencyProbeTests(unittest.TestCase):
                 "t1_ms": 150.0,
                 "t2_ms": 180.0,
                 "t3_ms": 200.0,
-                "t1_t0_ms": 50.0,
-                "t2_t1_ms": 30.0,
-                "t3_t2_ms": 20.0,
+                "write_to_input_append_latency_ms": 50.0,
+                "input_append_to_result_emission_latency_ms": 30.0,
+                "l_visibility_ms": 20.0,
                 "latency_ms": 1.0,
             },
             {
@@ -96,9 +96,9 @@ class KafkaLatencyProbeTests(unittest.TestCase):
                 "t1_ms": 350.0,
                 "t2_ms": 420.0,
                 "t3_ms": 500.0,
-                "t1_t0_ms": 150.0,
-                "t2_t1_ms": 70.0,
-                "t3_t2_ms": 80.0,
+                "write_to_input_append_latency_ms": 150.0,
+                "input_append_to_result_emission_latency_ms": 70.0,
+                "l_visibility_ms": 80.0,
                 "latency_ms": 3.0,
             },
         ]
@@ -124,7 +124,7 @@ class KafkaLatencyProbeTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["measurement"], "host_write_to_read_committed_visibility_delay_proxy")
         self.assertEqual(
             csv_lines[0],
-            "event_id,t0_ms,t1_ms,t2_ms,t3_ms,t1_t0_ms,t2_t1_ms,t3_t2_ms,latency_ms",
+            "event_id,t0_ms,t1_ms,t2_ms,t3_ms,write_to_input_append_latency_ms,input_append_to_result_emission_latency_ms,l_visibility_ms,l_closure_ms,latency_ms",
         )
         self.assertEqual(len(csv_lines), 3)
 

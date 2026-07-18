@@ -33,11 +33,22 @@ def run_once(name: str, *, events: int, keys: int, seed: int) -> dict[str, objec
     }
 
 
+
+def parse_scale(value: str) -> int:
+    v = value.lower()
+    if v.endswith("k"):
+        return int(float(v[:-1]) * 1000)
+    elif v.endswith("m"):
+        return int(float(v[:-1]) * 1000000)
+    elif v.endswith("b"):
+        return int(float(v[:-1]) * 1000000000)
+    return int(v)
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the local semantic benchmark harness.")
     parser.add_argument("--workload", choices=WORKLOADS + ("all",), default="all")
-    parser.add_argument("--events", type=int, default=1_000)
-    parser.add_argument("--keys", type=int, default=100)
+    parser.add_argument("--events", type=parse_scale, default=1000)
+    parser.add_argument("--keys", type=parse_scale, default=100)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--out", type=Path, default=Path("experiments/results/local_semantic_results.json"))
     args = parser.parse_args()

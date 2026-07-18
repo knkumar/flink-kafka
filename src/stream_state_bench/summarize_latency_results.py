@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import statistics
 from collections import defaultdict
 from pathlib import Path
 
@@ -39,9 +40,10 @@ def load_rows(results_dir: Path) -> list[dict[str, object]]:
                 "p95_ms": summary["p95_ms"],
                 "p99_ms": summary["p99_ms"],
                 "max_ms": summary["max_ms"],
-                "p99_t1_t0_ms": summary.get("p99_t1_t0_ms", ""),
-                "p99_t2_t1_ms": summary.get("p99_t2_t1_ms", ""),
-                "p99_t3_t2_ms": summary.get("p99_t3_t2_ms", ""),
+                "p99_write_to_input_append_latency_ms": summary.get("p99_write_to_input_append_latency_ms", ""),
+                "p99_input_append_to_result_emission_latency_ms": summary.get("p99_input_append_to_result_emission_latency_ms", ""),
+                "p99_l_visibility_ms": summary.get("p99_l_visibility_ms", ""),
+                "p99_l_closure_ms": summary.get("p99_l_closure_ms", ""),
                 "result_dir": str(run_dir),
             }
         )
@@ -71,17 +73,15 @@ def aggregate_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
                 "rate_per_sec": rate,
                 "runs": len(group),
                 "all_passed": all(bool(row["passed"]) for row in group),
-                "mean_p95_ms": round(sum(p95_values) / len(p95_values), 3),
-                "min_p95_ms": min(p95_values),
-                "max_p95_ms": max(p95_values),
-                "mean_p99_ms": round(sum(p99_values) / len(p99_values), 3),
-                "min_p99_ms": min(p99_values),
-                "max_p99_ms": max(p99_values),
+                "median_p95_ms": round(statistics.median(p95_values), 3),
+                "iqr_p95_ms": round(statistics.quantiles(p95_values, n=4)[2] - statistics.quantiles(p95_values, n=4)[0], 3) if len(p95_values) > 1 else 0.0,
+                "median_p99_ms": round(statistics.median(p99_values), 3),
+                "iqr_p99_ms": round(statistics.quantiles(p99_values, n=4)[2] - statistics.quantiles(p99_values, n=4)[0], 3) if len(p99_values) > 1 else 0.0,
             }
         )
         
         # Add decomposed latencies if they exist
-        for comp in ["t1_t0", "t2_t1", "t3_t2"]:
+        for comp in ["write_to_input_append_latency", "input_append_to_result_emission_latency", "l_visibility", "l_closure"]:
             vals = [float(row[f"p99_{comp}_ms"]) for row in group if row.get(f"p99_{comp}_ms")]
             if vals:
                 aggregates[-1][f"mean_p99_{comp}_ms"] = round(sum(vals) / len(vals), 3)
@@ -104,12 +104,12 @@ def write_csv(rows: list[dict[str, object]], path: Path) -> None:
 def write_markdown(rows: list[dict[str, object]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        "| Engine | Workload ID | Workload | Run label | Rate | Produced | Expected | Matched | Passed | p50 ms | p95 ms | p99 ms | p99 t1-t0 | p99 t2-t1 | p99 t3-t2 |",
-        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Engine | Workload ID | Workload | Run label | Rate | Produced | Expected | Matched | Passed | p50 ms | p95 ms | p99 ms | p99 write_to_input_append_latency | p99 input_append_to_result_emission_latency | p99 l_visibility | p99 l_closure |",
+        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
         lines.append(
-            "| {engine} | {workload_id} | {workload} | {run_label} | {rate_per_sec} | {produced_records} | {expected_output_records} | {matched_records} | {passed} | {p50_ms} | {p95_ms} | {p99_ms} | {p99_t1_t0_ms} | {p99_t2_t1_ms} | {p99_t3_t2_ms} |".format(
+            "| {engine} | {workload_id} | {workload} | {run_label} | {rate_per_sec} | {produced_records} | {expected_output_records} | {matched_records} | {passed} | {p50_ms} | {p95_ms} | {p99_ms} | {p99_write_to_input_append_latency_ms} | {p99_input_append_to_result_emission_latency_ms} | {p99_l_visibility_ms} | {p99_l_closure_ms} |".format(
                 **row
             )
         )
@@ -119,16 +119,16 @@ def write_markdown(rows: list[dict[str, object]], path: Path) -> None:
 def write_aggregate_markdown(rows: list[dict[str, object]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        "| Engine | Workload ID | Workload | Rate | Runs | All passed | Mean p95 ms | Min p95 ms | Max p95 ms | Mean p99 ms | Min p99 ms | Max p99 ms | Mean p99 t1-t0 | Mean p99 t2-t1 | Mean p99 t3-t2 |",
-        "| --- | --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Engine | Workload ID | Workload | Rate | Runs | All passed | Median p95 ms | IQR p95 ms | Median p99 ms | IQR p99 ms | Mean p99 write_to_input_append_latency | Mean p99 input_append_to_result_emission_latency | Mean p99 l_visibility | Mean p99 l_closure |",
+        "| --- | --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
         fmt_args = dict(row)
-        for k in ['mean_p99_t1_t0_ms', 'mean_p99_t2_t1_ms', 'mean_p99_t3_t2_ms']:
+        for k in ['mean_p99_write_to_input_append_latency_ms', 'mean_p99_input_append_to_result_emission_latency_ms', 'mean_p99_l_visibility_ms', 'mean_p99_l_closure_ms']:
             if k not in fmt_args:
                 fmt_args[k] = ''
         lines.append(
-            "| {engine} | {workload_id} | {workload} | {rate_per_sec} | {runs} | {all_passed} | {mean_p95_ms} | {min_p95_ms} | {max_p95_ms} | {mean_p99_ms} | {min_p99_ms} | {max_p99_ms} | {mean_p99_t1_t0_ms} | {mean_p99_t2_t1_ms} | {mean_p99_t3_t2_ms} |".format(
+            "| {engine} | {workload_id} | {workload} | {rate_per_sec} | {runs} | {all_passed} | {median_p95_ms} | {iqr_p95_ms} | {median_p99_ms} | {iqr_p99_ms} | {mean_p99_write_to_input_append_latency_ms} | {mean_p99_input_append_to_result_emission_latency_ms} | {mean_p99_l_visibility_ms} | {mean_p99_l_closure_ms} |".format(
                 **fmt_args
             )
         )

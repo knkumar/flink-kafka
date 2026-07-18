@@ -65,11 +65,22 @@ def write_identity_inputs(*, events: int, keys: int, seed: int, input_tsv: Path,
     write_inputs(workload="identity", events=events, keys=keys, seed=seed, input_tsv=input_tsv, expected_jsonl=expected_jsonl)
 
 
+
+def parse_scale(value: str) -> int:
+    v = value.lower()
+    if v.endswith("k"):
+        return int(float(v[:-1]) * 1000)
+    elif v.endswith("m"):
+        return int(float(v[:-1]) * 1000000)
+    elif v.endswith("b"):
+        return int(float(v[:-1]) * 1000000000)
+    return int(v)
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate deterministic benchmark input files.")
     parser.add_argument("--workload", choices=WORKLOADS, default="identity")
-    parser.add_argument("--events", type=int, default=1_000)
-    parser.add_argument("--keys", type=int, default=100)
+    parser.add_argument("--events", type=parse_scale, default=1000)
+    parser.add_argument("--keys", type=parse_scale, default=100)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--start-ms", type=int, default=0)
     parser.add_argument("--input-tsv", type=Path, default=Path("experiments/results/w1_input.tsv"))

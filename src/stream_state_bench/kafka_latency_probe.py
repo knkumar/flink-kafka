@@ -34,8 +34,8 @@ def output_record_id_and_sources(line: str) -> tuple[str, tuple[str, ...]]:
     raise ValueError("Output record has no output_id and no single source_event_ids entry")
 
 
-def load_expected_outputs(path: Path) -> dict[str, tuple[str, ...]]:
-    outputs: dict[str, tuple[str, ...]] = {}
+def load_expected_outputs(path: Path) -> dict[str, dict[str, object]]:
+    outputs: dict[str, dict[str, object]] = {}
     with path.open(encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
             stripped = line.strip()
@@ -45,7 +45,11 @@ def load_expected_outputs(path: Path) -> dict[str, tuple[str, ...]]:
                 record_id, source_ids = output_record_id_and_sources(stripped)
             except ValueError as exc:
                 raise ValueError(f"{path}:{line_number} cannot derive output event id") from exc
-            outputs[record_id] = source_ids
+            payload = json.loads(stripped)
+            outputs[record_id] = {
+                "source_ids": source_ids,
+                "window_end_ms": payload.get("window_end_ms"),
+            }
     return outputs
 
 
@@ -85,7 +89,7 @@ def summarize_samples(samples: list[dict[str, float | str]], *, rate_per_sec: fl
         "max_ms": max(latencies) if latencies else None,
     }
     
-    for comp in ["t1_t0_ms", "t2_t1_ms", "t3_t2_ms"]:
+    for comp in ["write_to_input_append_latency_ms", "input_append_to_result_emission_latency_ms", "l_visibility_ms", "l_closure_ms"]:
         comp_vals = [float(s[comp]) for s in samples if s.get(comp) is not None]
         if comp_vals:
             summary[f"p99_{comp}"] = percentile_nearest_rank(comp_vals, 99)
@@ -109,7 +113,7 @@ def write_latency_outputs(
     with latency_csv.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=[
             "event_id", "t0_ms", "t1_ms", "t2_ms", "t3_ms", 
-            "t1_t0_ms", "t2_t1_ms", "t3_t2_ms", "latency_ms"
+            "write_to_input_append_latency_ms", "input_append_to_result_emission_latency_ms", "l_visibility_ms", "l_closure_ms", "latency_ms"
         ])
         writer.writeheader()
         writer.writerows(samples)
@@ -129,6 +133,7 @@ def run_probe(
     rate_per_sec: float,
     timeout_sec: int,
     consumer_isolation: str,
+    allowed_lateness_ms: int = 0,
     input_sources: list[tuple[Path, str]] | None = None,
     docker_network: str | None = None,
 ) -> dict[str, object]:
@@ -246,9 +251,9 @@ def run_probe(
             time.sleep(min(remaining_ns / 1_000_000_000, 0.01))
         producer = producer_for(topic)
         assert producer.stdin is not None
+        send_times[input_event_id(line)] = time.time_ns()
         producer.stdin.write(line + "\n")
         producer.stdin.flush()
-        send_times[input_event_id(line)] = time.time_ns()
 
     for topic, producer in producers.items():
         assert producer.stdin is not None
@@ -281,8 +286,13 @@ def run_probe(
     unmatched_outputs: list[str] = []
     for receive_ns, line in received:
         record_id, source_ids = output_record_id_and_sources(line)
-        expected_source_ids = expected_outputs.get(record_id)
-        if expected_source_ids is None:
+        expected_record = expected_outputs.get(record_id)
+        if expected_record is None:
+            unmatched_outputs.append(record_id)
+            continue
+        expected_source_ids = expected_record["source_ids"]
+        expected_window_end_ms = expected_record.get("window_end_ms")
+        if False:
             unmatched_outputs.append(record_id)
             continue
         source_send_times = [send_times[source_id] for source_id in expected_source_ids if source_id in send_times]
@@ -304,15 +314,20 @@ def run_probe(
             t2_ms = None
             
         latency_ms = round(t3_ms - t0_ms, 3)
+        l_closure_ms = None
+        if t2_ms is not None and expected_window_end_ms is not None:
+            l_closure_ms = round(t2_ms - (expected_window_end_ms + allowed_lateness_ms), 3)
+
         sample = {
             "event_id": record_id,
             "t0_ms": t0_ms,
             "t1_ms": t1_ms,
             "t2_ms": t2_ms,
             "t3_ms": t3_ms,
-            "t1_t0_ms": round(t1_ms - t0_ms, 3) if t1_ms is not None else None,
-            "t2_t1_ms": round(t2_ms - t1_ms, 3) if t2_ms is not None and t1_ms is not None else None,
-            "t3_t2_ms": round(t3_ms - t2_ms, 3) if t3_ms is not None and t2_ms is not None else None,
+            "write_to_input_append_latency_ms": round(t1_ms - t0_ms, 3) if t1_ms is not None else None,
+            "input_append_to_result_emission_latency_ms": round(t2_ms - t1_ms, 3) if t2_ms is not None and t1_ms is not None else None,
+            "l_visibility_ms": round(t3_ms - t2_ms, 3) if t3_ms is not None and t2_ms is not None else None,
+            "l_closure_ms": l_closure_ms,
             "latency_ms": latency_ms,
         }
         samples.append(sample)
@@ -354,6 +369,7 @@ def main() -> int:
     parser.add_argument("--rate-per-sec", type=float, default=20.0)
     parser.add_argument("--timeout-sec", type=int, default=120)
     parser.add_argument("--consumer-isolation", default="read_committed")
+    parser.add_argument("--allowed-lateness-ms", type=int, default=0)
     parser.add_argument("--docker-network", type=str)
     args = parser.parse_args()
     input_sources = None
@@ -378,6 +394,7 @@ def main() -> int:
         rate_per_sec=args.rate_per_sec,
         timeout_sec=args.timeout_sec,
         consumer_isolation=args.consumer_isolation,
+        allowed_lateness_ms=args.allowed_lateness_ms,
         input_sources=input_sources,
         docker_network=args.docker_network,
     )

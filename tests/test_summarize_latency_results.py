@@ -57,7 +57,7 @@ class SummarizeLatencyResultsTests(unittest.TestCase):
         self.assertEqual(rows[0]["workload_id"], "w1")
         self.assertEqual(rows[0]["run_label"], "repeat1")
         self.assertEqual(aggregates[0]["runs"], 1)
-        self.assertEqual(aggregates[0]["mean_p99_ms"], 30.0)
+        self.assertEqual(aggregates[0]["median_p99_ms"], 30.0)
 
 
 if __name__ == "__main__":
