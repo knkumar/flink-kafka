@@ -1,0 +1,359 @@
+{
+  "summary": {
+    "measurement": "host_write_to_read_committed_visibility_delay_proxy",
+    "rate_per_sec": 40.0,
+    "matched_records": 56,
+    "min_ms": 541.299,
+    "mean_ms": 1763.1714821428573,
+    "p50_ms": 1765.886,
+    "p95_ms": 2890.619,
+    "p99_ms": 2964.982,
+    "max_ms": 2964.982,
+    "produced_records": 100,
+    "producer_topics": [
+      "bench-w2-latency-input"
+    ],
+    "expected_output_records": 56,
+    "consumed_records": 56,
+    "unmatched_output_ids": [],
+    "missing_output_ids": []
+  },
+  "samples": [
+    {
+      "event_id": "fm-e-0",
+      "send_time_ns": 848147214136764,
+      "receive_time_ns": 848150179118972,
+      "latency_ms": 2964.982
+    },
+    {
+      "event_id": "fm-e-1",
+      "send_time_ns": 848147238513635,
+      "receive_time_ns": 848150179122942,
+      "latency_ms": 2940.609
+    },
+    {
+      "event_id": "fm-e-3",
+      "send_time_ns": 848147288505071,
+      "receive_time_ns": 848150179124062,
+      "latency_ms": 2890.619
+    },
+    {
+      "event_id": "fm-e-4",
+      "send_time_ns": 848147313533824,
+      "receive_time_ns": 848150179125092,
+      "latency_ms": 2865.591
+    },
+    {
+      "event_id": "fm-e-5",
+      "send_time_ns": 848147338522156,
+      "receive_time_ns": 848150179126502,
+      "latency_ms": 2840.604
+    },
+    {
+      "event_id": "fm-e-8",
+      "send_time_ns": 848147413565145,
+      "receive_time_ns": 848150179127702,
+      "latency_ms": 2765.563
+    },
+    {
+      "event_id": "fm-e-9",
+      "send_time_ns": 848147438516728,
+      "receive_time_ns": 848150179128722,
+      "latency_ms": 2740.612
+    },
+    {
+      "event_id": "fm-e-10",
+      "send_time_ns": 848147464084492,
+      "receive_time_ns": 848150179133852,
+      "latency_ms": 2715.049
+    },
+    {
+      "event_id": "fm-e-11",
+      "send_time_ns": 848147488545253,
+      "receive_time_ns": 848150179154052,
+      "latency_ms": 2690.609
+    },
+    {
+      "event_id": "fm-e-12",
+      "send_time_ns": 848147513554536,
+      "receive_time_ns": 848150179155622,
+      "latency_ms": 2665.601
+    },
+    {
+      "event_id": "fm-e-13",
+      "send_time_ns": 848147538560299,
+      "receive_time_ns": 848150179157192,
+      "latency_ms": 2640.597
+    },
+    {
+      "event_id": "fm-e-15",
+      "send_time_ns": 848147588523755,
+      "receive_time_ns": 848150179158842,
+      "latency_ms": 2590.635
+    },
+    {
+      "event_id": "fm-e-16",
+      "send_time_ns": 848147613562678,
+      "receive_time_ns": 848150179160312,
+      "latency_ms": 2565.598
+    },
+    {
+      "event_id": "fm-e-17",
+      "send_time_ns": 848147638522501,
+      "receive_time_ns": 848150179161822,
+      "latency_ms": 2540.639
+    },
+    {
+      "event_id": "fm-e-21",
+      "send_time_ns": 848147738536762,
+      "receive_time_ns": 848150179170792,
+      "latency_ms": 2440.634
+    },
+    {
+      "event_id": "fm-e-23",
+      "send_time_ns": 848147788529548,
+      "receive_time_ns": 848150179171542,
+      "latency_ms": 2390.642
+    },
+    {
+      "event_id": "fm-e-28",
+      "send_time_ns": 848147913523922,
+      "receive_time_ns": 848150179179082,
+      "latency_ms": 2265.655
+    },
+    {
+      "event_id": "fm-e-30",
+      "send_time_ns": 848147963504998,
+      "receive_time_ns": 848150179212052,
+      "latency_ms": 2215.707
+    },
+    {
+      "event_id": "fm-e-31",
+      "send_time_ns": 848147988503841,
+      "receive_time_ns": 848150179212972,
+      "latency_ms": 2190.709
+    },
+    {
+      "event_id": "fm-e-33",
+      "send_time_ns": 848148038514526,
+      "receive_time_ns": 848150179213822,
+      "latency_ms": 2140.699
+    },
+    {
+      "event_id": "fm-e-34",
+      "send_time_ns": 848148063512509,
+      "receive_time_ns": 848150179241232,
+      "latency_ms": 2115.729
+    },
+    {
+      "event_id": "fm-e-38",
+      "send_time_ns": 848148163525151,
+      "receive_time_ns": 848150179247672,
+      "latency_ms": 2015.723
+    },
+    {
+      "event_id": "fm-e-39",
+      "send_time_ns": 848148188525484,
+      "receive_time_ns": 848150179293202,
+      "latency_ms": 1990.768
+    },
+    {
+      "event_id": "fm-e-42",
+      "send_time_ns": 848148263519602,
+      "receive_time_ns": 848150179294102,
+      "latency_ms": 1915.774
+    },
+    {
+      "event_id": "fm-e-44",
+      "send_time_ns": 848148313521908,
+      "receive_time_ns": 848150179300482,
+      "latency_ms": 1865.779
+    },
+    {
+      "event_id": "fm-e-45",
+      "send_time_ns": 848148338533211,
+      "receive_time_ns": 848150179301712,
+      "latency_ms": 1840.769
+    },
+    {
+      "event_id": "fm-e-46",
+      "send_time_ns": 848148363524454,
+      "receive_time_ns": 848150179340092,
+      "latency_ms": 1815.816
+    },
+    {
+      "event_id": "fm-e-47",
+      "send_time_ns": 848148388520977,
+      "receive_time_ns": 848150179340942,
+      "latency_ms": 1790.82
+    },
+    {
+      "event_id": "fm-e-48",
+      "send_time_ns": 848148413507409,
+      "receive_time_ns": 848150179393673,
+      "latency_ms": 1765.886
+    },
+    {
+      "event_id": "fm-e-49",
+      "send_time_ns": 848148438538412,
+      "receive_time_ns": 848150179394393,
+      "latency_ms": 1740.856
+    },
+    {
+      "event_id": "fm-e-50",
+      "send_time_ns": 848148463513175,
+      "receive_time_ns": 848150179433223,
+      "latency_ms": 1715.92
+    },
+    {
+      "event_id": "fm-e-56",
+      "send_time_ns": 848148613514742,
+      "receive_time_ns": 848150179433993,
+      "latency_ms": 1565.919
+    },
+    {
+      "event_id": "fm-e-57",
+      "send_time_ns": 848148638559195,
+      "receive_time_ns": 848150179434723,
+      "latency_ms": 1540.876
+    },
+    {
+      "event_id": "fm-e-58",
+      "send_time_ns": 848148663543068,
+      "receive_time_ns": 848150179436023,
+      "latency_ms": 1515.893
+    },
+    {
+      "event_id": "fm-e-59",
+      "send_time_ns": 848148688551371,
+      "receive_time_ns": 848150179472813,
+      "latency_ms": 1490.921
+    },
+    {
+      "event_id": "fm-e-60",
+      "send_time_ns": 848148713546404,
+      "receive_time_ns": 848150179473633,
+      "latency_ms": 1465.927
+    },
+    {
+      "event_id": "fm-e-61",
+      "send_time_ns": 848148738544777,
+      "receive_time_ns": 848150179500783,
+      "latency_ms": 1440.956
+    },
+    {
+      "event_id": "fm-e-64",
+      "send_time_ns": 848148813496255,
+      "receive_time_ns": 848150179501593,
+      "latency_ms": 1366.005
+    },
+    {
+      "event_id": "fm-e-65",
+      "send_time_ns": 848148838503668,
+      "receive_time_ns": 848150179520853,
+      "latency_ms": 1341.017
+    },
+    {
+      "event_id": "fm-e-66",
+      "send_time_ns": 848148863489041,
+      "receive_time_ns": 848150179552843,
+      "latency_ms": 1316.064
+    },
+    {
+      "event_id": "fm-e-67",
+      "send_time_ns": 848148888493954,
+      "receive_time_ns": 848150179553533,
+      "latency_ms": 1291.06
+    },
+    {
+      "event_id": "fm-e-77",
+      "send_time_ns": 848149138488784,
+      "receive_time_ns": 848150179578313,
+      "latency_ms": 1041.09
+    },
+    {
+      "event_id": "fm-e-78",
+      "send_time_ns": 848149163499446,
+      "receive_time_ns": 848150179608273,
+      "latency_ms": 1016.109
+    },
+    {
+      "event_id": "fm-e-80",
+      "send_time_ns": 848149213493412,
+      "receive_time_ns": 848150179609043,
+      "latency_ms": 966.116
+    },
+    {
+      "event_id": "fm-e-81",
+      "send_time_ns": 848149238499185,
+      "receive_time_ns": 848150179636573,
+      "latency_ms": 941.137
+    },
+    {
+      "event_id": "fm-e-83",
+      "send_time_ns": 848149288500161,
+      "receive_time_ns": 848150179644083,
+      "latency_ms": 891.144
+    },
+    {
+      "event_id": "fm-e-84",
+      "send_time_ns": 848149313560594,
+      "receive_time_ns": 848150179670533,
+      "latency_ms": 866.11
+    },
+    {
+      "event_id": "fm-e-85",
+      "send_time_ns": 848149338496257,
+      "receive_time_ns": 848150179671303,
+      "latency_ms": 841.175
+    },
+    {
+      "event_id": "fm-e-86",
+      "send_time_ns": 848149363552990,
+      "receive_time_ns": 848150179702783,
+      "latency_ms": 816.15
+    },
+    {
+      "event_id": "fm-e-90",
+      "send_time_ns": 848149463504461,
+      "receive_time_ns": 848150179703553,
+      "latency_ms": 716.199
+    },
+    {
+      "event_id": "fm-e-91",
+      "send_time_ns": 848149488495234,
+      "receive_time_ns": 848150179734434,
+      "latency_ms": 691.239
+    },
+    {
+      "event_id": "fm-e-92",
+      "send_time_ns": 848149513520247,
+      "receive_time_ns": 848150179735234,
+      "latency_ms": 666.215
+    },
+    {
+      "event_id": "fm-e-94",
+      "send_time_ns": 848149563523143,
+      "receive_time_ns": 848150179759314,
+      "latency_ms": 616.236
+    },
+    {
+      "event_id": "fm-e-95",
+      "send_time_ns": 848149588511586,
+      "receive_time_ns": 848150179784014,
+      "latency_ms": 591.272
+    },
+    {
+      "event_id": "fm-e-96",
+      "send_time_ns": 848149613504818,
+      "receive_time_ns": 848150179784604,
+      "latency_ms": 566.28
+    },
+    {
+      "event_id": "fm-e-97",
+      "send_time_ns": 848149638509151,
+      "receive_time_ns": 848150179807684,
+      "latency_ms": 541.299
+    }
+  ]
+}

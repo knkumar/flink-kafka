@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "note": "Local semantic harness only; no Flink or Kafka Streams runtime was executed.",
+  "results": [
+    {
+      "workload": "identity",
+      "engine": "local_semantic_harness",
+      "events": 1000,
+      "keys": 100,
+      "seed": 7,
+      "output_records": 1000,
+      "reference_runtime_ms": 4.03,
+      "verification_runtime_ms": 3.944,
+      "verification": {
+        "expected_count": 1000,
+        "actual_count": 1000,
+        "missing_count": 0,
+        "unexpected_count": 0,
+        "duplicate_count": 0,
+        "passed": true
+      }
+    },
+    {
+      "workload": "filter_map",
+      "engine": "local_semantic_harness",
+      "events": 1000,
+      "keys": 100,
+      "seed": 7,
+      "output_records": 513,
+      "reference_runtime_ms": 3.355,
+      "verification_runtime_ms": 3.258,
+      "verification": {
+        "expected_count": 513,
+        "actual_count": 513,
+        "missing_count": 0,
+        "unexpected_count": 0,
+        "duplicate_count": 0,
+        "passed": true
+      }
+    },
+    {
+      "workload": "tumbling_count",
+      "engine": "local_semantic_harness",
+      "events": 1000,
+      "keys": 100,
+      "seed": 7,
+      "output_records": 199,
+      "reference_runtime_ms": 3.309,
+      "verification_runtime_ms": 3.385,
+      "verification": {
+        "expected_count": 199,
+        "actual_count": 199,
+        "missing_count": 0,
+        "unexpected_count": 0,
+        "duplicate_count": 0,
+        "passed": true
+      }
+    },
+    {
+      "workload": "sliding_sum",
+      "engine": "local_semantic_harness",
+      "events": 1000,
+      "keys": 100,
+      "seed": 7,
+      "output_records": 1099,
+      "reference_runtime_ms": 10.365,
+      "verification_runtime_ms": 10.225,
+      "verification": {
+        "expected_count": 1099,
+        "actual_count": 1099,
+        "missing_count": 0,
+        "unexpected_count": 0,
+        "duplicate_count": 0,
+        "passed": true
+      }
+    },
+    {
+      "workload": "stream_stream_join",
+      "engine": "local_semantic_harness",
+      "events": 1000,
+      "keys": 100,
+      "seed": 7,
+      "output_records": 11024,
+      "reference_runtime_ms": 45.52,
+      "verification_runtime_ms": 47.503,
+      "verification": {
+        "expected_count": 11024,
+        "actual_count": 11024,
+        "missing_count": 0,
+        "unexpected_count": 0,
+        "duplicate_count": 0,
+        "passed": true
+      }
+    }
+  ]
+}

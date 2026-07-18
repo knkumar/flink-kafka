@@ -1,0 +1,28 @@
+{
+  "events": 100,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "workload": "sliding_sum",
+  "run_label": "repeat1",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 710,
+  "produced_records": 101,
+  "producer_topics": [
+    "bench-w4-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "fdbe8a11678a22862651a2a85f50b14fe278ccd5e15908a3e24626ffa54a4aea",
+  "input_topic": "bench-w4-latency-input",
+  "left_input_topic": "bench-w4-latency-left-input",
+  "right_input_topic": "bench-w4-latency-right-input",
+  "output_topic": "bench-w4-latency-output",
+  "application_id": "stream-state-bench-w4-latency-sliding_sum-repeat1",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 3191.806,
+  "latency_p95_ms": 6091.807,
+  "latency_p99_ms": 6338.27
+}

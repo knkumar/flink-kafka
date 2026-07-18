@@ -1,0 +1,1 @@
+[stub docker] compose -f experiments/kafka_streams_w1/docker-compose.yml logs --no-color

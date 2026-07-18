@@ -1,0 +1,16 @@
+{
+  "workload": "sliding_sum",
+  "actual_jsonl": "experiments/results/flink_w4_latency_rate10/actual.jsonl",
+  "events": 100,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "verification": {
+    "expected_count": 710,
+    "actual_count": 710,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}

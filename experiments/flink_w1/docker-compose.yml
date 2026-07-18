@@ -1,0 +1,49 @@
+services:
+  kafka:
+    image: apache/kafka:4.3.1
+    container_name: stream-state-bench-flink-kafka
+    environment:
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_FLUSH_MESSAGES: "1"
+      KAFKA_FLUSH_MS: "0"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  flink-identity:
+    build:
+      context: .
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      GROUP_ID: "${GROUP_ID:-stream-state-bench-flink-w1}"
+      INPUT_TOPIC: "${INPUT_TOPIC:-bench-w1-input}"
+      LEFT_INPUT_TOPIC: "${LEFT_INPUT_TOPIC:-bench-w5-left-input}"
+      RIGHT_INPUT_TOPIC: "${RIGHT_INPUT_TOPIC:-bench-w5-right-input}"
+      OUTPUT_TOPIC: "${OUTPUT_TOPIC:-bench-w1-flink-output}"
+      TRANSACTIONAL_ID_PREFIX: "${TRANSACTIONAL_ID_PREFIX:-stream-state-bench-flink-w1}"
+      WORKLOAD: "${WORKLOAD:-identity}"
+      SOURCE_BOUNDED: "${SOURCE_BOUNDED:-true}"
+      CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-1000}"
+    volumes:
+      - ./checkpoints:/tmp/flink-checkpoints
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G

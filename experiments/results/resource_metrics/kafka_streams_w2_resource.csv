@@ -1,0 +1,27 @@
+timestamp,container,cpu_perc,mem_usage,net_io,block_io
+1784301720.0549574,kafka_streams_w1-kafka-streams-identity-1,2.41%,98.85MiB / 31.28GiB,15kB / 12.8kB,0B / 36.9kB
+1784301720.0549574,stream-state-bench-kafka,5.90%,320.5MiB / 31.28GiB,21.9kB / 19.5kB,0B / 1.68MB
+1784301727.0861347,kafka_streams_w1-kafka-streams-identity-1,3.43%,118.4MiB / 31.28GiB,23.1kB / 31.7kB,0B / 69.6kB
+1784301727.0861347,stream-state-bench-kafka,11.04%,336.6MiB / 31.28GiB,56.2kB / 55.7kB,0B / 1.81MB
+1784301733.43479,kafka_streams_w1-kafka-streams-identity-1,6.03%,120.3MiB / 31.28GiB,25.5kB / 36kB,0B / 77.8kB
+1784301733.43479,stream-state-bench-kafka,15.21%,328.5MiB / 31.28GiB,67.7kB / 64kB,0B / 1.93MB
+1784301740.4626892,kafka_streams_w1-kafka-streams-identity-1,2.09%,120.8MiB / 31.28GiB,27.9kB / 40.2kB,0B / 86kB
+1784301740.4626892,stream-state-bench-kafka,8.57%,334.1MiB / 31.28GiB,75.2kB / 69.3kB,0B / 1.99MB
+1784301747.4893289,kafka_streams_w1-kafka-streams-identity-1,1.22%,121MiB / 31.28GiB,29.9kB / 43.8kB,0B / 98.3kB
+1784301747.4893289,stream-state-bench-kafka,3.86%,328.7MiB / 31.28GiB,84.6kB / 76.2kB,0B / 2.1MB
+1784301754.1380856,kafka_streams_w1-kafka-streams-identity-1,1.08%,121.2MiB / 31.28GiB,32.7kB / 48.1kB,0B / 115kB
+1784301754.1380856,stream-state-bench-kafka,8.81%,329.9MiB / 31.28GiB,93kB / 82kB,0B / 2.19MB
+1784301761.1656945,kafka_streams_w1-kafka-streams-identity-1,1.45%,122.9MiB / 31.28GiB,35.1kB / 52.7kB,0B / 123kB
+1784301761.1656945,stream-state-bench-kafka,3.21%,328.2MiB / 31.28GiB,100kB / 87.2kB,0B / 2.27MB
+1784301768.193899,kafka_streams_w1-kafka-streams-identity-1,1.19%,124.2MiB / 31.28GiB,37.4kB / 56.9kB,0B / 143kB
+1784301768.193899,stream-state-bench-kafka,2.27%,330.6MiB / 31.28GiB,110kB / 93.6kB,0B / 2.35MB
+1784301775.2201939,kafka_streams_w1-kafka-streams-identity-1,0.72%,125.2MiB / 31.28GiB,39.4kB / 60.5kB,0B / 152kB
+1784301775.2201939,stream-state-bench-kafka,3.56%,337.2MiB / 31.28GiB,119kB / 100kB,0B / 2.47MB
+1784301782.2431707,kafka_streams_w1-kafka-streams-identity-1,0.79%,126.7MiB / 31.28GiB,42.2kB / 65.6kB,0B / 160kB
+1784301782.2431707,stream-state-bench-kafka,1.85%,337.5MiB / 31.28GiB,127kB / 106kB,0B / 2.54MB
+1784301789.2360098,kafka_streams_w1-kafka-streams-identity-1,0.68%,127.9MiB / 31.28GiB,44.6kB / 69.7kB,0B / 180kB
+1784301789.2360098,stream-state-bench-kafka,1.58%,337MiB / 31.28GiB,137kB / 113kB,0B / 2.65MB
+1784301796.2617152,kafka_streams_w1-kafka-streams-identity-1,2.53%,129MiB / 31.28GiB,46.9kB / 73.8kB,0B / 193kB
+1784301796.2617152,stream-state-bench-kafka,2.18%,337.1MiB / 31.28GiB,145kB / 118kB,0B / 2.74MB
+1784301803.292751,kafka_streams_w1-kafka-streams-identity-1,0.98%,130.5MiB / 31.28GiB,49.2kB / 78.4kB,0B / 201kB
+1784301803.292751,stream-state-bench-kafka,2.49%,339.1MiB / 31.28GiB,151kB / 123kB,0B / 2.84MB

@@ -1,0 +1,32 @@
+{
+  "events": 100,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "workload": "sliding_sum",
+  "run_label": "rate40",
+  "rate_per_sec": 40.0,
+  "expected_output_records": 710,
+  "produced_records": 101,
+  "producer_topics": [
+    "bench-w4-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "flink_app_image_id": "c67ce3b8f208c5ceaabca401f5609b24ce775a35bf1c31b6a8be6cc4a16c6b3b",
+  "flink_version": "2.2.0",
+  "flink_kafka_connector_version": "5.0.0-2.2",
+  "input_topic": "bench-w4-latency-input",
+  "left_input_topic": "bench-w4-latency-left-input",
+  "right_input_topic": "bench-w4-latency-right-input",
+  "output_topic": "bench-w4-latency-flink-output",
+  "group_id": "stream-state-bench-flink-w4-latency-rate40",
+  "transactional_id_prefix": "stream-state-bench-flink-w4-latency-rate40",
+  "source_bounded": false,
+  "delivery_guarantee": "exactly_once",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 1965.928,
+  "latency_p95_ms": 3415.926,
+  "latency_p99_ms": 3540.11
+}

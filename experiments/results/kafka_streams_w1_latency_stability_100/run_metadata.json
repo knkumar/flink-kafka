@@ -1,0 +1,28 @@
+{
+  "events": 180000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "identity",
+  "run_label": "stability_100",
+  "rate_per_sec": 100.0,
+  "expected_output_records": 180000,
+  "produced_records": 180000,
+  "producer_topics": [
+    "bench-w1-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "0e1a2e3600b0561d2ef7e3e54331fbcc43f65896f242d5d876b7e75cb075c181",
+  "input_topic": "bench-w1-latency-input",
+  "left_input_topic": "bench-w1-latency-left-input",
+  "right_input_topic": "bench-w1-latency-right-input",
+  "output_topic": "bench-w1-latency-output",
+  "application_id": "stream-state-bench-w1-latency-identity-stability_100",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 1216.313,
+  "latency_p95_ms": 1852.678,
+  "latency_p99_ms": 1967.434
+}

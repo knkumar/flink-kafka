@@ -1,0 +1,16 @@
+{
+  "workload": "identity",
+  "actual_jsonl": "experiments/results/flink_w1_repeat1/actual.jsonl",
+  "events": 1000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "verification": {
+    "expected_count": 1000,
+    "actual_count": 1000,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}

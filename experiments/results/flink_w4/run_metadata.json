@@ -1,0 +1,18 @@
+{
+  "events": 1000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "workload": "sliding_sum",
+  "expected_output_records": 1099,
+  "producer_input_records": 1001,
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "flink_app_image_id": "158da853f8c6c5a672d1ba0e2775cfa00442310a841f7771d6dda4e472dc3502",
+  "flink_version": "2.2.0",
+  "flink_kafka_connector_version": "5.0.0-2.2",
+  "input_topic": "bench-w4-input",
+  "output_topic": "bench-w4-flink-output",
+  "delivery_guarantee": "exactly_once",
+  "consumer_isolation": "read_committed"
+}

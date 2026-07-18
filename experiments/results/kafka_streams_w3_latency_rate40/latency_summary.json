@@ -1,0 +1,449 @@
+{
+  "summary": {
+    "measurement": "host_write_to_read_committed_visibility_delay_proxy",
+    "rate_per_sec": 40.0,
+    "matched_records": 71,
+    "min_ms": 1468.56,
+    "mean_ms": 2498.8942253521127,
+    "p50_ms": 2368.306,
+    "p95_ms": 3818.504,
+    "p99_ms": 3942.612,
+    "max_ms": 3942.612,
+    "produced_records": 101,
+    "producer_topics": [
+      "bench-w3-latency-input"
+    ],
+    "expected_output_records": 71,
+    "consumed_records": 71,
+    "unmatched_output_ids": [],
+    "missing_output_ids": []
+  },
+  "samples": [
+    {
+      "event_id": "tc-0-0",
+      "send_time_ns": 848727346635413,
+      "receive_time_ns": 848728839867898,
+      "latency_ms": 1493.232
+    },
+    {
+      "event_id": "tc-1-0",
+      "send_time_ns": 848727271634237,
+      "receive_time_ns": 848728839872008,
+      "latency_ms": 1568.238
+    },
+    {
+      "event_id": "tc-10-0",
+      "send_time_ns": 848727196619712,
+      "receive_time_ns": 848728839881078,
+      "latency_ms": 1643.261
+    },
+    {
+      "event_id": "tc-11-0",
+      "send_time_ns": 848726446626859,
+      "receive_time_ns": 848728839882148,
+      "latency_ms": 2393.255
+    },
+    {
+      "event_id": "tc-12-0",
+      "send_time_ns": 848725646629034,
+      "receive_time_ns": 848728839883618,
+      "latency_ms": 3193.255
+    },
+    {
+      "event_id": "tc-13-0",
+      "send_time_ns": 848725571647309,
+      "receive_time_ns": 848728839884788,
+      "latency_ms": 3268.237
+    },
+    {
+      "event_id": "tc-14-0",
+      "send_time_ns": 848726771654283,
+      "receive_time_ns": 848728839885828,
+      "latency_ms": 2068.232
+    },
+    {
+      "event_id": "tc-15-0",
+      "send_time_ns": 848726096651435,
+      "receive_time_ns": 848728839891648,
+      "latency_ms": 2743.24
+    },
+    {
+      "event_id": "tc-16-0",
+      "send_time_ns": 848726846617848,
+      "receive_time_ns": 848728839893148,
+      "latency_ms": 1993.275
+    },
+    {
+      "event_id": "tc-17-0",
+      "send_time_ns": 848727021609010,
+      "receive_time_ns": 848728839894378,
+      "latency_ms": 1818.285
+    },
+    {
+      "event_id": "tc-19-0",
+      "send_time_ns": 848727221634424,
+      "receive_time_ns": 848728839895178,
+      "latency_ms": 1618.261
+    },
+    {
+      "event_id": "tc-2-0",
+      "send_time_ns": 848726696683657,
+      "receive_time_ns": 848728839917778,
+      "latency_ms": 2143.234
+    },
+    {
+      "event_id": "tc-21-0",
+      "send_time_ns": 848726946629585,
+      "receive_time_ns": 848728839918438,
+      "latency_ms": 1893.289
+    },
+    {
+      "event_id": "tc-23-0",
+      "send_time_ns": 848725896643881,
+      "receive_time_ns": 848728839918948,
+      "latency_ms": 2943.275
+    },
+    {
+      "event_id": "tc-24-0",
+      "send_time_ns": 848725621682852,
+      "receive_time_ns": 848728839919388,
+      "latency_ms": 3218.237
+    },
+    {
+      "event_id": "tc-28-0",
+      "send_time_ns": 848725371656855,
+      "receive_time_ns": 848728839919808,
+      "latency_ms": 3468.263
+    },
+    {
+      "event_id": "tc-29-0",
+      "send_time_ns": 848727171637560,
+      "receive_time_ns": 848728839920238,
+      "latency_ms": 1668.283
+    },
+    {
+      "event_id": "tc-31-0",
+      "send_time_ns": 848726871620460,
+      "receive_time_ns": 848728839920868,
+      "latency_ms": 1968.3
+    },
+    {
+      "event_id": "tc-33-0",
+      "send_time_ns": 848727321633941,
+      "receive_time_ns": 848728839930318,
+      "latency_ms": 1518.296
+    },
+    {
+      "event_id": "tc-34-0",
+      "send_time_ns": 848726471624701,
+      "receive_time_ns": 848728839930818,
+      "latency_ms": 2368.306
+    },
+    {
+      "event_id": "tc-35-0",
+      "send_time_ns": 848726996648048,
+      "receive_time_ns": 848728839980978,
+      "latency_ms": 1843.333
+    },
+    {
+      "event_id": "tc-38-0",
+      "send_time_ns": 848725971632806,
+      "receive_time_ns": 848728839982158,
+      "latency_ms": 2868.349
+    },
+    {
+      "event_id": "tc-39-0",
+      "send_time_ns": 848726571624388,
+      "receive_time_ns": 848728840026359,
+      "latency_ms": 2268.402
+    },
+    {
+      "event_id": "tc-4-0",
+      "send_time_ns": 848725096627036,
+      "receive_time_ns": 848728840027139,
+      "latency_ms": 3743.4
+    },
+    {
+      "event_id": "tc-40-0",
+      "send_time_ns": 848726321641851,
+      "receive_time_ns": 848728840085819,
+      "latency_ms": 2518.444
+    },
+    {
+      "event_id": "tc-41-0",
+      "send_time_ns": 848724897481055,
+      "receive_time_ns": 848728840093299,
+      "latency_ms": 3942.612
+    },
+    {
+      "event_id": "tc-43-0",
+      "send_time_ns": 848726021615680,
+      "receive_time_ns": 848728840094119,
+      "latency_ms": 2818.478
+    },
+    {
+      "event_id": "tc-45-0",
+      "send_time_ns": 848727121626507,
+      "receive_time_ns": 848728840094839,
+      "latency_ms": 1718.468
+    },
+    {
+      "event_id": "tc-46-0",
+      "send_time_ns": 848725021629021,
+      "receive_time_ns": 848728840132819,
+      "latency_ms": 3818.504
+    },
+    {
+      "event_id": "tc-48-0",
+      "send_time_ns": 848727146634269,
+      "receive_time_ns": 848728840133749,
+      "latency_ms": 1693.499
+    },
+    {
+      "event_id": "tc-5-0",
+      "send_time_ns": 848726221649394,
+      "receive_time_ns": 848728840139769,
+      "latency_ms": 2618.49
+    },
+    {
+      "event_id": "tc-50-0",
+      "send_time_ns": 848726896631361,
+      "receive_time_ns": 848728840140479,
+      "latency_ms": 1943.509
+    },
+    {
+      "event_id": "tc-51-0",
+      "send_time_ns": 848726971615096,
+      "receive_time_ns": 848728840183889,
+      "latency_ms": 1868.569
+    },
+    {
+      "event_id": "tc-53-0",
+      "send_time_ns": 848727371625334,
+      "receive_time_ns": 848728840185189,
+      "latency_ms": 1468.56
+    },
+    {
+      "event_id": "tc-54-0",
+      "send_time_ns": 848725196667533,
+      "receive_time_ns": 848728840215179,
+      "latency_ms": 3643.548
+    },
+    {
+      "event_id": "tc-55-0",
+      "send_time_ns": 848727046633772,
+      "receive_time_ns": 848728840215969,
+      "latency_ms": 1793.582
+    },
+    {
+      "event_id": "tc-57-0",
+      "send_time_ns": 848726621637932,
+      "receive_time_ns": 848728840240869,
+      "latency_ms": 2218.603
+    },
+    {
+      "event_id": "tc-58-0",
+      "send_time_ns": 848726421630268,
+      "receive_time_ns": 848728840241629,
+      "latency_ms": 2418.611
+    },
+    {
+      "event_id": "tc-59-0",
+      "send_time_ns": 848726721661969,
+      "receive_time_ns": 848728840272189,
+      "latency_ms": 2118.61
+    },
+    {
+      "event_id": "tc-6-0",
+      "send_time_ns": 848725346664323,
+      "receive_time_ns": 848728840272929,
+      "latency_ms": 3493.609
+    },
+    {
+      "event_id": "tc-62-0",
+      "send_time_ns": 848726196651302,
+      "receive_time_ns": 848728840309359,
+      "latency_ms": 2643.658
+    },
+    {
+      "event_id": "tc-63-0",
+      "send_time_ns": 848726921614133,
+      "receive_time_ns": 848728840310879,
+      "latency_ms": 1918.697
+    },
+    {
+      "event_id": "tc-64-0",
+      "send_time_ns": 848725071624204,
+      "receive_time_ns": 848728840339389,
+      "latency_ms": 3768.715
+    },
+    {
+      "event_id": "tc-68-0",
+      "send_time_ns": 848725771622923,
+      "receive_time_ns": 848728840340129,
+      "latency_ms": 3068.717
+    },
+    {
+      "event_id": "tc-69-0",
+      "send_time_ns": 848725471680212,
+      "receive_time_ns": 848728840373870,
+      "latency_ms": 3368.694
+    },
+    {
+      "event_id": "tc-7-0",
+      "send_time_ns": 848726796666254,
+      "receive_time_ns": 848728840374690,
+      "latency_ms": 2043.708
+    },
+    {
+      "event_id": "tc-70-0",
+      "send_time_ns": 848727071621143,
+      "receive_time_ns": 848728840403200,
+      "latency_ms": 1768.782
+    },
+    {
+      "event_id": "tc-71-0",
+      "send_time_ns": 848725521657545,
+      "receive_time_ns": 848728840404000,
+      "latency_ms": 3318.746
+    },
+    {
+      "event_id": "tc-72-0",
+      "send_time_ns": 848725696626747,
+      "receive_time_ns": 848728840436030,
+      "latency_ms": 3143.809
+    },
+    {
+      "event_id": "tc-73-0",
+      "send_time_ns": 848726596634650,
+      "receive_time_ns": 848728840436870,
+      "latency_ms": 2243.802
+    },
+    {
+      "event_id": "tc-74-0",
+      "send_time_ns": 848726396637736,
+      "receive_time_ns": 848728840467600,
+      "latency_ms": 2443.83
+    },
+    {
+      "event_id": "tc-75-0",
+      "send_time_ns": 848727296628379,
+      "receive_time_ns": 848728840468300,
+      "latency_ms": 1543.84
+    },
+    {
+      "event_id": "tc-76-0",
+      "send_time_ns": 848726371619174,
+      "receive_time_ns": 848728840494980,
+      "latency_ms": 2468.876
+    },
+    {
+      "event_id": "tc-77-0",
+      "send_time_ns": 848726071649173,
+      "receive_time_ns": 848728840496030,
+      "latency_ms": 2768.847
+    },
+    {
+      "event_id": "tc-79-0",
+      "send_time_ns": 848725721624359,
+      "receive_time_ns": 848728840526020,
+      "latency_ms": 3118.902
+    },
+    {
+      "event_id": "tc-8-0",
+      "send_time_ns": 848726521630895,
+      "receive_time_ns": 848728840531590,
+      "latency_ms": 2318.901
+    },
+    {
+      "event_id": "tc-80-0",
+      "send_time_ns": 848725271648538,
+      "receive_time_ns": 848728840567770,
+      "latency_ms": 3568.919
+    },
+    {
+      "event_id": "tc-83-0",
+      "send_time_ns": 848724946654416,
+      "receive_time_ns": 848728840568390,
+      "latency_ms": 3893.914
+    },
+    {
+      "event_id": "tc-84-0",
+      "send_time_ns": 848727246624486,
+      "receive_time_ns": 848728840605000,
+      "latency_ms": 1593.981
+    },
+    {
+      "event_id": "tc-85-0",
+      "send_time_ns": 848726671668086,
+      "receive_time_ns": 848728840605510,
+      "latency_ms": 2168.937
+    },
+    {
+      "event_id": "tc-87-0",
+      "send_time_ns": 848725546660967,
+      "receive_time_ns": 848728840634060,
+      "latency_ms": 3293.973
+    },
+    {
+      "event_id": "tc-88-0",
+      "send_time_ns": 848726346632242,
+      "receive_time_ns": 848728840689710,
+      "latency_ms": 2494.057
+    },
+    {
+      "event_id": "tc-89-0",
+      "send_time_ns": 848726496630273,
+      "receive_time_ns": 848728840690210,
+      "latency_ms": 2344.06
+    },
+    {
+      "event_id": "tc-9-0",
+      "send_time_ns": 848724971642067,
+      "receive_time_ns": 848728840772081,
+      "latency_ms": 3869.13
+    },
+    {
+      "event_id": "tc-90-0",
+      "send_time_ns": 848727096635465,
+      "receive_time_ns": 848728840802301,
+      "latency_ms": 1744.167
+    },
+    {
+      "event_id": "tc-91-0",
+      "send_time_ns": 848726646643444,
+      "receive_time_ns": 848728840816281,
+      "latency_ms": 2194.173
+    },
+    {
+      "event_id": "tc-93-0",
+      "send_time_ns": 848726546628407,
+      "receive_time_ns": 848728840819821,
+      "latency_ms": 2294.191
+    },
+    {
+      "event_id": "tc-96-0",
+      "send_time_ns": 848726146657709,
+      "receive_time_ns": 848728840862181,
+      "latency_ms": 2694.204
+    },
+    {
+      "event_id": "tc-97-0",
+      "send_time_ns": 848726271638147,
+      "receive_time_ns": 848728840897411,
+      "latency_ms": 2569.259
+    },
+    {
+      "event_id": "tc-98-0",
+      "send_time_ns": 848726821643226,
+      "receive_time_ns": 848728840897801,
+      "latency_ms": 2019.255
+    },
+    {
+      "event_id": "tc-99-0",
+      "send_time_ns": 848725921617403,
+      "receive_time_ns": 848728840929141,
+      "latency_ms": 2919.312
+    }
+  ]
+}

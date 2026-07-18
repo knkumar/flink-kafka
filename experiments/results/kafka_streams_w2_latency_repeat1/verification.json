@@ -1,0 +1,16 @@
+{
+  "workload": "filter_map",
+  "actual_jsonl": "experiments/results/kafka_streams_w2_latency_repeat1/actual.jsonl",
+  "events": 100,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "verification": {
+    "expected_count": 56,
+    "actual_count": 56,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}

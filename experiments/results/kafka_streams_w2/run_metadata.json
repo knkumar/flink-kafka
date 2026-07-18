@@ -1,0 +1,14 @@
+{
+  "events": 1000,
+  "keys": 100,
+  "seed": 7,
+  "workload": "filter_map",
+  "expected_output_records": 513,
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "5cdd3eba5cd03745edd6a8233ebae07dd47bc0ab7aa9ccaf44d10ac32d0e6c5d",
+  "input_topic": "bench-w2-input",
+  "output_topic": "bench-w2-output",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed"
+}

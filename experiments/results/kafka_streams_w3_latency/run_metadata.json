@@ -1,0 +1,22 @@
+{
+  "events": 100,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "tumbling_count",
+  "run_label": "",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 71,
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "cb8c1056d27546b9b4787e9833b527d93294a7f4c95348ddc51d35a8098a6f2e",
+  "input_topic": "bench-w3-latency-input",
+  "output_topic": "bench-w3-latency-output",
+  "application_id": "stream-state-bench-w3-latency-tumbling_count",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 3973.097,
+  "latency_p95_ms": 6873.202,
+  "latency_p99_ms": 7123.28
+}

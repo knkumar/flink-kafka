@@ -1,0 +1,16 @@
+{
+  "workload": "tumbling_count",
+  "actual_jsonl": "experiments/results/flink_w3_latency_tuning_control/actual.jsonl",
+  "events": 100,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "verification": {
+    "expected_count": 71,
+    "actual_count": 0,
+    "missing_count": 71,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": false
+  }
+}

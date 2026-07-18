@@ -1,0 +1,1140 @@
+{
+  "summary": {
+    "measurement": "host_write_to_read_committed_visibility_delay_proxy",
+    "rate_per_sec": 10.0,
+    "matched_records": 186,
+    "min_ms": 35.803,
+    "mean_ms": 1160.8151075268815,
+    "p50_ms": 1135.848,
+    "p95_ms": 2039.22,
+    "p99_ms": 2439.144,
+    "max_ms": 2538.23,
+    "produced_records": 200,
+    "producer_topics": [
+      "bench-w5-latency-left-input",
+      "bench-w5-latency-right-input"
+    ],
+    "expected_output_records": 186,
+    "consumed_records": 186,
+    "unmatched_output_ids": [],
+    "missing_output_ids": []
+  },
+  "samples": [
+    {
+      "event_id": "join-l-0-r-0",
+      "send_time_ns": 849986150127449,
+      "receive_time_ns": 849988688357771,
+      "latency_ms": 2538.23
+    },
+    {
+      "event_id": "join-l-75-r-1",
+      "send_time_ns": 849986249222159,
+      "receive_time_ns": 849988688361121,
+      "latency_ms": 2439.139
+    },
+    {
+      "event_id": "join-l-76-r-1",
+      "send_time_ns": 849986249222159,
+      "receive_time_ns": 849988688361811,
+      "latency_ms": 2439.14
+    },
+    {
+      "event_id": "join-l-1-r-1",
+      "send_time_ns": 849986249222159,
+      "receive_time_ns": 849988688366461,
+      "latency_ms": 2439.144
+    },
+    {
+      "event_id": "join-l-2-r-2",
+      "send_time_ns": 849986349217572,
+      "receive_time_ns": 849988688367071,
+      "latency_ms": 2339.149
+    },
+    {
+      "event_id": "join-l-84-r-2",
+      "send_time_ns": 849986349217572,
+      "receive_time_ns": 849988688469861,
+      "latency_ms": 2339.252
+    },
+    {
+      "event_id": "join-l-3-r-3",
+      "send_time_ns": 849986449246395,
+      "receive_time_ns": 849988688473531,
+      "latency_ms": 2239.227
+    },
+    {
+      "event_id": "join-l-4-r-4",
+      "send_time_ns": 849986549268038,
+      "receive_time_ns": 849988688479411,
+      "latency_ms": 2139.211
+    },
+    {
+      "event_id": "join-l-52-r-4",
+      "send_time_ns": 849986549268038,
+      "receive_time_ns": 849988688481221,
+      "latency_ms": 2139.213
+    },
+    {
+      "event_id": "join-l-5-r-5",
+      "send_time_ns": 849986649263331,
+      "receive_time_ns": 849988688483001,
+      "latency_ms": 2039.22
+    },
+    {
+      "event_id": "join-l-6-r-6",
+      "send_time_ns": 849986749238584,
+      "receive_time_ns": 849988688483941,
+      "latency_ms": 1939.245
+    },
+    {
+      "event_id": "join-l-58-r-6",
+      "send_time_ns": 849986749238584,
+      "receive_time_ns": 849988688484901,
+      "latency_ms": 1939.246
+    },
+    {
+      "event_id": "join-l-7-r-7",
+      "send_time_ns": 849986849248777,
+      "receive_time_ns": 849988688485891,
+      "latency_ms": 1839.237
+    },
+    {
+      "event_id": "join-l-8-r-8",
+      "send_time_ns": 849986949244540,
+      "receive_time_ns": 849988688501841,
+      "latency_ms": 1739.257
+    },
+    {
+      "event_id": "join-l-22-r-9",
+      "send_time_ns": 849987049256223,
+      "receive_time_ns": 849988688502961,
+      "latency_ms": 1639.247
+    },
+    {
+      "event_id": "join-l-9-r-9",
+      "send_time_ns": 849987049256223,
+      "receive_time_ns": 849988688503831,
+      "latency_ms": 1639.248
+    },
+    {
+      "event_id": "join-l-10-r-10",
+      "send_time_ns": 849987149241765,
+      "receive_time_ns": 849988688504611,
+      "latency_ms": 1539.263
+    },
+    {
+      "event_id": "join-l-11-r-11",
+      "send_time_ns": 849987249221078,
+      "receive_time_ns": 849988688505721,
+      "latency_ms": 1439.285
+    },
+    {
+      "event_id": "join-l-19-r-11",
+      "send_time_ns": 849987249221078,
+      "receive_time_ns": 849988688506561,
+      "latency_ms": 1439.285
+    },
+    {
+      "event_id": "join-l-41-r-11",
+      "send_time_ns": 849987249221078,
+      "receive_time_ns": 849988688650982,
+      "latency_ms": 1439.43
+    },
+    {
+      "event_id": "join-l-12-r-12",
+      "send_time_ns": 849987349225931,
+      "receive_time_ns": 849988688653172,
+      "latency_ms": 1339.427
+    },
+    {
+      "event_id": "join-l-17-r-12",
+      "send_time_ns": 849987349225931,
+      "receive_time_ns": 849988688654082,
+      "latency_ms": 1339.428
+    },
+    {
+      "event_id": "join-l-72-r-13",
+      "send_time_ns": 849987449237054,
+      "receive_time_ns": 849988688654922,
+      "latency_ms": 1239.418
+    },
+    {
+      "event_id": "join-l-13-r-13",
+      "send_time_ns": 849987449237054,
+      "receive_time_ns": 849988688655852,
+      "latency_ms": 1239.419
+    },
+    {
+      "event_id": "join-l-14-r-14",
+      "send_time_ns": 849987549242587,
+      "receive_time_ns": 849988688656922,
+      "latency_ms": 1139.414
+    },
+    {
+      "event_id": "join-l-15-r-15",
+      "send_time_ns": 849987649259010,
+      "receive_time_ns": 849988688658832,
+      "latency_ms": 1039.4
+    },
+    {
+      "event_id": "join-l-91-r-16",
+      "send_time_ns": 849987749267663,
+      "receive_time_ns": 849988688713592,
+      "latency_ms": 939.446
+    },
+    {
+      "event_id": "join-l-16-r-16",
+      "send_time_ns": 849987749267663,
+      "receive_time_ns": 849988688714742,
+      "latency_ms": 939.447
+    },
+    {
+      "event_id": "join-l-12-r-17",
+      "send_time_ns": 849987849225706,
+      "receive_time_ns": 849988688715652,
+      "latency_ms": 839.49
+    },
+    {
+      "event_id": "join-l-17-r-17",
+      "send_time_ns": 849987849225706,
+      "receive_time_ns": 849988688773102,
+      "latency_ms": 839.547
+    },
+    {
+      "event_id": "join-l-18-r-18",
+      "send_time_ns": 849987949218269,
+      "receive_time_ns": 849988688773992,
+      "latency_ms": 739.556
+    },
+    {
+      "event_id": "join-l-74-r-18",
+      "send_time_ns": 849987949218269,
+      "receive_time_ns": 849988688774542,
+      "latency_ms": 739.556
+    },
+    {
+      "event_id": "join-l-11-r-19",
+      "send_time_ns": 849988049254822,
+      "receive_time_ns": 849988688775032,
+      "latency_ms": 639.52
+    },
+    {
+      "event_id": "join-l-19-r-19",
+      "send_time_ns": 849988049254822,
+      "receive_time_ns": 849988688781602,
+      "latency_ms": 639.527
+    },
+    {
+      "event_id": "join-l-41-r-19",
+      "send_time_ns": 849988049254822,
+      "receive_time_ns": 849988688793532,
+      "latency_ms": 639.539
+    },
+    {
+      "event_id": "join-l-78-r-20",
+      "send_time_ns": 849988149240595,
+      "receive_time_ns": 849988688793852,
+      "latency_ms": 539.553
+    },
+    {
+      "event_id": "join-l-20-r-20",
+      "send_time_ns": 849988149240595,
+      "receive_time_ns": 849988688901822,
+      "latency_ms": 539.661
+    },
+    {
+      "event_id": "join-l-21-r-21",
+      "send_time_ns": 849988249204878,
+      "receive_time_ns": 849988688903492,
+      "latency_ms": 439.699
+    },
+    {
+      "event_id": "join-l-22-r-22",
+      "send_time_ns": 849988349222421,
+      "receive_time_ns": 849988688904422,
+      "latency_ms": 339.682
+    },
+    {
+      "event_id": "join-l-9-r-22",
+      "send_time_ns": 849988349222421,
+      "receive_time_ns": 849988688905272,
+      "latency_ms": 339.683
+    },
+    {
+      "event_id": "join-l-23-r-23",
+      "send_time_ns": 849988449256844,
+      "receive_time_ns": 849989484959885,
+      "latency_ms": 1035.703
+    },
+    {
+      "event_id": "join-l-95-r-23",
+      "send_time_ns": 849988449256844,
+      "receive_time_ns": 849989484964215,
+      "latency_ms": 1035.707
+    },
+    {
+      "event_id": "join-l-24-r-24",
+      "send_time_ns": 849988549235137,
+      "receive_time_ns": 849989484965595,
+      "latency_ms": 935.73
+    },
+    {
+      "event_id": "join-l-39-r-25",
+      "send_time_ns": 849988649243130,
+      "receive_time_ns": 849989484966915,
+      "latency_ms": 835.724
+    },
+    {
+      "event_id": "join-l-25-r-25",
+      "send_time_ns": 849988649243130,
+      "receive_time_ns": 849989484967655,
+      "latency_ms": 835.725
+    },
+    {
+      "event_id": "join-l-26-r-26",
+      "send_time_ns": 849988749220713,
+      "receive_time_ns": 849989484968345,
+      "latency_ms": 735.748
+    },
+    {
+      "event_id": "join-l-54-r-27",
+      "send_time_ns": 849988849264776,
+      "receive_time_ns": 849989484968955,
+      "latency_ms": 635.704
+    },
+    {
+      "event_id": "join-l-27-r-27",
+      "send_time_ns": 849988849264776,
+      "receive_time_ns": 849989484983295,
+      "latency_ms": 635.719
+    },
+    {
+      "event_id": "join-l-28-r-28",
+      "send_time_ns": 849988949240089,
+      "receive_time_ns": 849989484984095,
+      "latency_ms": 535.744
+    },
+    {
+      "event_id": "join-l-29-r-29",
+      "send_time_ns": 849989049212372,
+      "receive_time_ns": 849989484984745,
+      "latency_ms": 435.772
+    },
+    {
+      "event_id": "join-l-30-r-30",
+      "send_time_ns": 849989149228225,
+      "receive_time_ns": 849989484985345,
+      "latency_ms": 335.757
+    },
+    {
+      "event_id": "join-l-96-r-30",
+      "send_time_ns": 849989149228225,
+      "receive_time_ns": 849989484985975,
+      "latency_ms": 335.758
+    },
+    {
+      "event_id": "join-l-31-r-31",
+      "send_time_ns": 849989249219098,
+      "receive_time_ns": 849989484986655,
+      "latency_ms": 235.768
+    },
+    {
+      "event_id": "join-l-80-r-31",
+      "send_time_ns": 849989249219098,
+      "receive_time_ns": 849989485026465,
+      "latency_ms": 235.807
+    },
+    {
+      "event_id": "join-l-92-r-31",
+      "send_time_ns": 849989249219098,
+      "receive_time_ns": 849989485027405,
+      "latency_ms": 235.808
+    },
+    {
+      "event_id": "join-l-66-r-32",
+      "send_time_ns": 849989349223841,
+      "receive_time_ns": 849989485028145,
+      "latency_ms": 135.804
+    },
+    {
+      "event_id": "join-l-32-r-32",
+      "send_time_ns": 849989349223841,
+      "receive_time_ns": 849989485028875,
+      "latency_ms": 135.805
+    },
+    {
+      "event_id": "join-l-53-r-32",
+      "send_time_ns": 849989349223841,
+      "receive_time_ns": 849989485029575,
+      "latency_ms": 135.806
+    },
+    {
+      "event_id": "join-l-33-r-33",
+      "send_time_ns": 849989449227194,
+      "receive_time_ns": 849989485030325,
+      "latency_ms": 35.803
+    },
+    {
+      "event_id": "join-l-34-r-34",
+      "send_time_ns": 849989549242297,
+      "receive_time_ns": 849991485068565,
+      "latency_ms": 1935.826
+    },
+    {
+      "event_id": "join-l-62-r-35",
+      "send_time_ns": 849989649241070,
+      "receive_time_ns": 849991485070605,
+      "latency_ms": 1835.83
+    },
+    {
+      "event_id": "join-l-82-r-35",
+      "send_time_ns": 849989649241070,
+      "receive_time_ns": 849991485071605,
+      "latency_ms": 1835.831
+    },
+    {
+      "event_id": "join-l-35-r-35",
+      "send_time_ns": 849989649241070,
+      "receive_time_ns": 849991485072115,
+      "latency_ms": 1835.831
+    },
+    {
+      "event_id": "join-l-63-r-35",
+      "send_time_ns": 849989649241070,
+      "receive_time_ns": 849991485072505,
+      "latency_ms": 1835.831
+    },
+    {
+      "event_id": "join-l-67-r-36",
+      "send_time_ns": 849989749223243,
+      "receive_time_ns": 849991485073075,
+      "latency_ms": 1735.85
+    },
+    {
+      "event_id": "join-l-36-r-36",
+      "send_time_ns": 849989749223243,
+      "receive_time_ns": 849991485311906,
+      "latency_ms": 1736.089
+    },
+    {
+      "event_id": "join-l-44-r-37",
+      "send_time_ns": 849989849224136,
+      "receive_time_ns": 849991485312866,
+      "latency_ms": 1636.089
+    },
+    {
+      "event_id": "join-l-37-r-37",
+      "send_time_ns": 849989849224136,
+      "receive_time_ns": 849991485313436,
+      "latency_ms": 1636.089
+    },
+    {
+      "event_id": "join-l-38-r-38",
+      "send_time_ns": 849989949224549,
+      "receive_time_ns": 849991485314106,
+      "latency_ms": 1536.09
+    },
+    {
+      "event_id": "join-l-39-r-39",
+      "send_time_ns": 849990049257822,
+      "receive_time_ns": 849991485321966,
+      "latency_ms": 1436.064
+    },
+    {
+      "event_id": "join-l-25-r-39",
+      "send_time_ns": 849990049257822,
+      "receive_time_ns": 849991485322796,
+      "latency_ms": 1436.065
+    },
+    {
+      "event_id": "join-l-87-r-40",
+      "send_time_ns": 849990149218595,
+      "receive_time_ns": 849991485323386,
+      "latency_ms": 1336.105
+    },
+    {
+      "event_id": "join-l-40-r-40",
+      "send_time_ns": 849990149218595,
+      "receive_time_ns": 849991485323926,
+      "latency_ms": 1336.105
+    },
+    {
+      "event_id": "join-l-49-r-40",
+      "send_time_ns": 849990149218595,
+      "receive_time_ns": 849991485324516,
+      "latency_ms": 1336.106
+    },
+    {
+      "event_id": "join-l-11-r-41",
+      "send_time_ns": 849990249215208,
+      "receive_time_ns": 849991485325116,
+      "latency_ms": 1236.11
+    },
+    {
+      "event_id": "join-l-19-r-41",
+      "send_time_ns": 849990249215208,
+      "receive_time_ns": 849991485325876,
+      "latency_ms": 1236.111
+    },
+    {
+      "event_id": "join-l-41-r-41",
+      "send_time_ns": 849990249215208,
+      "receive_time_ns": 849991485326506,
+      "latency_ms": 1236.111
+    },
+    {
+      "event_id": "join-l-42-r-42",
+      "send_time_ns": 849990349223751,
+      "receive_time_ns": 849991485327536,
+      "latency_ms": 1136.104
+    },
+    {
+      "event_id": "join-l-43-r-43",
+      "send_time_ns": 849990449216984,
+      "receive_time_ns": 849991485328106,
+      "latency_ms": 1036.111
+    },
+    {
+      "event_id": "join-l-44-r-44",
+      "send_time_ns": 849990549228027,
+      "receive_time_ns": 849991485328666,
+      "latency_ms": 936.101
+    },
+    {
+      "event_id": "join-l-37-r-44",
+      "send_time_ns": 849990549228027,
+      "receive_time_ns": 849991485369336,
+      "latency_ms": 936.141
+    },
+    {
+      "event_id": "join-l-45-r-45",
+      "send_time_ns": 849990649223560,
+      "receive_time_ns": 849992484157313,
+      "latency_ms": 1834.934
+    },
+    {
+      "event_id": "join-l-46-r-46",
+      "send_time_ns": 849990749221373,
+      "receive_time_ns": 849992484159413,
+      "latency_ms": 1734.938
+    },
+    {
+      "event_id": "join-l-47-r-47",
+      "send_time_ns": 849990849222456,
+      "receive_time_ns": 849992484176153,
+      "latency_ms": 1634.954
+    },
+    {
+      "event_id": "join-l-56-r-47",
+      "send_time_ns": 849990849222456,
+      "receive_time_ns": 849992484176773,
+      "latency_ms": 1634.954
+    },
+    {
+      "event_id": "join-l-48-r-48",
+      "send_time_ns": 849990949218249,
+      "receive_time_ns": 849992484177293,
+      "latency_ms": 1534.959
+    },
+    {
+      "event_id": "join-l-87-r-49",
+      "send_time_ns": 849991049268162,
+      "receive_time_ns": 849992484177873,
+      "latency_ms": 1434.91
+    },
+    {
+      "event_id": "join-l-40-r-49",
+      "send_time_ns": 849991049268162,
+      "receive_time_ns": 849992484178473,
+      "latency_ms": 1434.91
+    },
+    {
+      "event_id": "join-l-49-r-49",
+      "send_time_ns": 849991049268162,
+      "receive_time_ns": 849992484179123,
+      "latency_ms": 1434.911
+    },
+    {
+      "event_id": "join-l-50-r-50",
+      "send_time_ns": 849991149244735,
+      "receive_time_ns": 849992484179713,
+      "latency_ms": 1334.935
+    },
+    {
+      "event_id": "join-l-51-r-51",
+      "send_time_ns": 849991249270318,
+      "receive_time_ns": 849992484193043,
+      "latency_ms": 1234.923
+    },
+    {
+      "event_id": "join-l-68-r-51",
+      "send_time_ns": 849991249270318,
+      "receive_time_ns": 849992484193723,
+      "latency_ms": 1234.923
+    },
+    {
+      "event_id": "join-l-85-r-51",
+      "send_time_ns": 849991249270318,
+      "receive_time_ns": 849992484194493,
+      "latency_ms": 1234.924
+    },
+    {
+      "event_id": "join-l-4-r-52",
+      "send_time_ns": 849991349210911,
+      "receive_time_ns": 849992484197123,
+      "latency_ms": 1134.986
+    },
+    {
+      "event_id": "join-l-52-r-52",
+      "send_time_ns": 849991349210911,
+      "receive_time_ns": 849992484288993,
+      "latency_ms": 1135.078
+    },
+    {
+      "event_id": "join-l-66-r-53",
+      "send_time_ns": 849991449224814,
+      "receive_time_ns": 849992484290183,
+      "latency_ms": 1035.065
+    },
+    {
+      "event_id": "join-l-32-r-53",
+      "send_time_ns": 849991449224814,
+      "receive_time_ns": 849992484290633,
+      "latency_ms": 1035.066
+    },
+    {
+      "event_id": "join-l-53-r-53",
+      "send_time_ns": 849991449224814,
+      "receive_time_ns": 849992484291043,
+      "latency_ms": 1035.066
+    },
+    {
+      "event_id": "join-l-54-r-54",
+      "send_time_ns": 849991549241197,
+      "receive_time_ns": 849992484291413,
+      "latency_ms": 935.05
+    },
+    {
+      "event_id": "join-l-27-r-54",
+      "send_time_ns": 849991549241197,
+      "receive_time_ns": 849992484291753,
+      "latency_ms": 935.051
+    },
+    {
+      "event_id": "join-l-55-r-55",
+      "send_time_ns": 849991649228260,
+      "receive_time_ns": 849992484292113,
+      "latency_ms": 835.064
+    },
+    {
+      "event_id": "join-l-47-r-56",
+      "send_time_ns": 849991749224793,
+      "receive_time_ns": 849993485063806,
+      "latency_ms": 1735.839
+    },
+    {
+      "event_id": "join-l-56-r-56",
+      "send_time_ns": 849991749224793,
+      "receive_time_ns": 849993485065986,
+      "latency_ms": 1735.841
+    },
+    {
+      "event_id": "join-l-59-r-57",
+      "send_time_ns": 849991849226986,
+      "receive_time_ns": 849993485067136,
+      "latency_ms": 1635.84
+    },
+    {
+      "event_id": "join-l-57-r-57",
+      "send_time_ns": 849991849226986,
+      "receive_time_ns": 849993485067756,
+      "latency_ms": 1635.841
+    },
+    {
+      "event_id": "join-l-6-r-58",
+      "send_time_ns": 849991949217179,
+      "receive_time_ns": 849993485068296,
+      "latency_ms": 1535.851
+    },
+    {
+      "event_id": "join-l-58-r-58",
+      "send_time_ns": 849991949217179,
+      "receive_time_ns": 849993485068796,
+      "latency_ms": 1535.852
+    },
+    {
+      "event_id": "join-l-59-r-59",
+      "send_time_ns": 849992049229972,
+      "receive_time_ns": 849993485083926,
+      "latency_ms": 1435.854
+    },
+    {
+      "event_id": "join-l-57-r-59",
+      "send_time_ns": 849992049229972,
+      "receive_time_ns": 849993485084446,
+      "latency_ms": 1435.854
+    },
+    {
+      "event_id": "join-l-60-r-60",
+      "send_time_ns": 849992149245245,
+      "receive_time_ns": 849993485086326,
+      "latency_ms": 1335.841
+    },
+    {
+      "event_id": "join-l-61-r-61",
+      "send_time_ns": 849992249241998,
+      "receive_time_ns": 849993485086826,
+      "latency_ms": 1235.845
+    },
+    {
+      "event_id": "join-l-62-r-62",
+      "send_time_ns": 849992349250141,
+      "receive_time_ns": 849993485097666,
+      "latency_ms": 1135.848
+    },
+    {
+      "event_id": "join-l-82-r-62",
+      "send_time_ns": 849992349250141,
+      "receive_time_ns": 849993485136176,
+      "latency_ms": 1135.886
+    },
+    {
+      "event_id": "join-l-35-r-62",
+      "send_time_ns": 849992349250141,
+      "receive_time_ns": 849993485136906,
+      "latency_ms": 1135.887
+    },
+    {
+      "event_id": "join-l-63-r-62",
+      "send_time_ns": 849992349250141,
+      "receive_time_ns": 849993485137566,
+      "latency_ms": 1135.887
+    },
+    {
+      "event_id": "join-l-62-r-63",
+      "send_time_ns": 849992449260384,
+      "receive_time_ns": 849993485138236,
+      "latency_ms": 1035.878
+    },
+    {
+      "event_id": "join-l-82-r-63",
+      "send_time_ns": 849992449260384,
+      "receive_time_ns": 849993485138726,
+      "latency_ms": 1035.878
+    },
+    {
+      "event_id": "join-l-35-r-63",
+      "send_time_ns": 849992449260384,
+      "receive_time_ns": 849993485139216,
+      "latency_ms": 1035.879
+    },
+    {
+      "event_id": "join-l-63-r-63",
+      "send_time_ns": 849992449260384,
+      "receive_time_ns": 849993485139656,
+      "latency_ms": 1035.879
+    },
+    {
+      "event_id": "join-l-64-r-64",
+      "send_time_ns": 849992549194467,
+      "receive_time_ns": 849993485144286,
+      "latency_ms": 935.95
+    },
+    {
+      "event_id": "join-l-65-r-65",
+      "send_time_ns": 849992649203170,
+      "receive_time_ns": 849993485196167,
+      "latency_ms": 835.993
+    },
+    {
+      "event_id": "join-l-66-r-66",
+      "send_time_ns": 849992749217673,
+      "receive_time_ns": 849993485196657,
+      "latency_ms": 735.979
+    },
+    {
+      "event_id": "join-l-32-r-66",
+      "send_time_ns": 849992749217673,
+      "receive_time_ns": 849993485231307,
+      "latency_ms": 736.014
+    },
+    {
+      "event_id": "join-l-53-r-66",
+      "send_time_ns": 849992749217673,
+      "receive_time_ns": 849993485231757,
+      "latency_ms": 736.014
+    },
+    {
+      "event_id": "join-l-67-r-67",
+      "send_time_ns": 849992849224386,
+      "receive_time_ns": 849994484280845,
+      "latency_ms": 1635.056
+    },
+    {
+      "event_id": "join-l-36-r-67",
+      "send_time_ns": 849992849224386,
+      "receive_time_ns": 849994484282945,
+      "latency_ms": 1635.059
+    },
+    {
+      "event_id": "join-l-51-r-68",
+      "send_time_ns": 849992949228949,
+      "receive_time_ns": 849994484283965,
+      "latency_ms": 1535.055
+    },
+    {
+      "event_id": "join-l-68-r-68",
+      "send_time_ns": 849992949228949,
+      "receive_time_ns": 849994484284555,
+      "latency_ms": 1535.056
+    },
+    {
+      "event_id": "join-l-85-r-68",
+      "send_time_ns": 849992949228949,
+      "receive_time_ns": 849994484284965,
+      "latency_ms": 1535.056
+    },
+    {
+      "event_id": "join-l-69-r-69",
+      "send_time_ns": 849993049225752,
+      "receive_time_ns": 849994484287465,
+      "latency_ms": 1435.062
+    },
+    {
+      "event_id": "join-l-70-r-70",
+      "send_time_ns": 849993149228805,
+      "receive_time_ns": 849994484314335,
+      "latency_ms": 1335.086
+    },
+    {
+      "event_id": "join-l-71-r-71",
+      "send_time_ns": 849993249222059,
+      "receive_time_ns": 849994484314885,
+      "latency_ms": 1235.093
+    },
+    {
+      "event_id": "join-l-72-r-72",
+      "send_time_ns": 849993349218182,
+      "receive_time_ns": 849994484324715,
+      "latency_ms": 1135.107
+    },
+    {
+      "event_id": "join-l-13-r-72",
+      "send_time_ns": 849993349218182,
+      "receive_time_ns": 849994484325175,
+      "latency_ms": 1135.107
+    },
+    {
+      "event_id": "join-l-73-r-73",
+      "send_time_ns": 849993449242405,
+      "receive_time_ns": 849994484325625,
+      "latency_ms": 1035.083
+    },
+    {
+      "event_id": "join-l-18-r-74",
+      "send_time_ns": 849993549301538,
+      "receive_time_ns": 849994484326055,
+      "latency_ms": 935.025
+    },
+    {
+      "event_id": "join-l-74-r-74",
+      "send_time_ns": 849993549301538,
+      "receive_time_ns": 849994484326495,
+      "latency_ms": 935.025
+    },
+    {
+      "event_id": "join-l-75-r-75",
+      "send_time_ns": 849993649277921,
+      "receive_time_ns": 849994484326945,
+      "latency_ms": 835.049
+    },
+    {
+      "event_id": "join-l-76-r-75",
+      "send_time_ns": 849993649277921,
+      "receive_time_ns": 849994484385475,
+      "latency_ms": 835.108
+    },
+    {
+      "event_id": "join-l-1-r-75",
+      "send_time_ns": 849993649277921,
+      "receive_time_ns": 849994484386035,
+      "latency_ms": 835.108
+    },
+    {
+      "event_id": "join-l-75-r-76",
+      "send_time_ns": 849993749222794,
+      "receive_time_ns": 849994484500646,
+      "latency_ms": 735.278
+    },
+    {
+      "event_id": "join-l-76-r-76",
+      "send_time_ns": 849993749222794,
+      "receive_time_ns": 849994484502946,
+      "latency_ms": 735.28
+    },
+    {
+      "event_id": "join-l-1-r-76",
+      "send_time_ns": 849993749222794,
+      "receive_time_ns": 849994484503566,
+      "latency_ms": 735.281
+    },
+    {
+      "event_id": "join-l-86-r-77",
+      "send_time_ns": 849993849215717,
+      "receive_time_ns": 849994484504306,
+      "latency_ms": 635.289
+    },
+    {
+      "event_id": "join-l-77-r-77",
+      "send_time_ns": 849993849215717,
+      "receive_time_ns": 849994484504856,
+      "latency_ms": 635.289
+    },
+    {
+      "event_id": "join-l-78-r-78",
+      "send_time_ns": 849993949244830,
+      "receive_time_ns": 849995485414579,
+      "latency_ms": 1536.17
+    },
+    {
+      "event_id": "join-l-20-r-78",
+      "send_time_ns": 849993949244830,
+      "receive_time_ns": 849995485418049,
+      "latency_ms": 1536.173
+    },
+    {
+      "event_id": "join-l-79-r-79",
+      "send_time_ns": 849994049223083,
+      "receive_time_ns": 849995485419679,
+      "latency_ms": 1436.197
+    },
+    {
+      "event_id": "join-l-31-r-80",
+      "send_time_ns": 849994149242556,
+      "receive_time_ns": 849995485420509,
+      "latency_ms": 1336.178
+    },
+    {
+      "event_id": "join-l-80-r-80",
+      "send_time_ns": 849994149242556,
+      "receive_time_ns": 849995485423539,
+      "latency_ms": 1336.181
+    },
+    {
+      "event_id": "join-l-92-r-80",
+      "send_time_ns": 849994149242556,
+      "receive_time_ns": 849995485424449,
+      "latency_ms": 1336.182
+    },
+    {
+      "event_id": "join-l-81-r-81",
+      "send_time_ns": 849994249241090,
+      "receive_time_ns": 849995485425229,
+      "latency_ms": 1236.184
+    },
+    {
+      "event_id": "join-l-62-r-82",
+      "send_time_ns": 849994349219753,
+      "receive_time_ns": 849995485426029,
+      "latency_ms": 1136.206
+    },
+    {
+      "event_id": "join-l-82-r-82",
+      "send_time_ns": 849994349219753,
+      "receive_time_ns": 849995485426819,
+      "latency_ms": 1136.207
+    },
+    {
+      "event_id": "join-l-35-r-82",
+      "send_time_ns": 849994349219753,
+      "receive_time_ns": 849995485445139,
+      "latency_ms": 1136.225
+    },
+    {
+      "event_id": "join-l-63-r-82",
+      "send_time_ns": 849994349219753,
+      "receive_time_ns": 849995485446159,
+      "latency_ms": 1136.226
+    },
+    {
+      "event_id": "join-l-83-r-83",
+      "send_time_ns": 849994449236486,
+      "receive_time_ns": 849995485446919,
+      "latency_ms": 1036.21
+    },
+    {
+      "event_id": "join-l-2-r-84",
+      "send_time_ns": 849994549241269,
+      "receive_time_ns": 849995485447769,
+      "latency_ms": 936.207
+    },
+    {
+      "event_id": "join-l-84-r-84",
+      "send_time_ns": 849994549241269,
+      "receive_time_ns": 849995485448569,
+      "latency_ms": 936.207
+    },
+    {
+      "event_id": "join-l-51-r-85",
+      "send_time_ns": 849994649240872,
+      "receive_time_ns": 849995485449279,
+      "latency_ms": 836.208
+    },
+    {
+      "event_id": "join-l-68-r-85",
+      "send_time_ns": 849994649240872,
+      "receive_time_ns": 849995485450269,
+      "latency_ms": 836.209
+    },
+    {
+      "event_id": "join-l-85-r-85",
+      "send_time_ns": 849994649240872,
+      "receive_time_ns": 849995485451069,
+      "latency_ms": 836.21
+    },
+    {
+      "event_id": "join-l-86-r-86",
+      "send_time_ns": 849994749261485,
+      "receive_time_ns": 849995485451849,
+      "latency_ms": 736.19
+    },
+    {
+      "event_id": "join-l-77-r-86",
+      "send_time_ns": 849994749261485,
+      "receive_time_ns": 849995485452639,
+      "latency_ms": 736.191
+    },
+    {
+      "event_id": "join-l-87-r-87",
+      "send_time_ns": 849994849577879,
+      "receive_time_ns": 849995485453469,
+      "latency_ms": 635.876
+    },
+    {
+      "event_id": "join-l-40-r-87",
+      "send_time_ns": 849994849577879,
+      "receive_time_ns": 849995485541569,
+      "latency_ms": 635.964
+    },
+    {
+      "event_id": "join-l-49-r-87",
+      "send_time_ns": 849994849577879,
+      "receive_time_ns": 849995485543069,
+      "latency_ms": 635.965
+    },
+    {
+      "event_id": "join-l-88-r-88",
+      "send_time_ns": 849994949225571,
+      "receive_time_ns": 849995485543709,
+      "latency_ms": 536.318
+    },
+    {
+      "event_id": "join-l-89-r-89",
+      "send_time_ns": 849995049227874,
+      "receive_time_ns": 849996480944418,
+      "latency_ms": 1431.717
+    },
+    {
+      "event_id": "join-l-90-r-90",
+      "send_time_ns": 849995149229697,
+      "receive_time_ns": 849996480947138,
+      "latency_ms": 1331.717
+    },
+    {
+      "event_id": "join-l-93-r-90",
+      "send_time_ns": 849995149229697,
+      "receive_time_ns": 849996480948368,
+      "latency_ms": 1331.719
+    },
+    {
+      "event_id": "join-l-91-r-91",
+      "send_time_ns": 849995249224390,
+      "receive_time_ns": 849996480949088,
+      "latency_ms": 1231.725
+    },
+    {
+      "event_id": "join-l-16-r-91",
+      "send_time_ns": 849995249224390,
+      "receive_time_ns": 849996480949798,
+      "latency_ms": 1231.725
+    },
+    {
+      "event_id": "join-l-31-r-92",
+      "send_time_ns": 849995349235923,
+      "receive_time_ns": 849996480952738,
+      "latency_ms": 1131.717
+    },
+    {
+      "event_id": "join-l-80-r-92",
+      "send_time_ns": 849995349235923,
+      "receive_time_ns": 849996480953388,
+      "latency_ms": 1131.717
+    },
+    {
+      "event_id": "join-l-92-r-92",
+      "send_time_ns": 849995349235923,
+      "receive_time_ns": 849996480967948,
+      "latency_ms": 1131.732
+    },
+    {
+      "event_id": "join-l-90-r-93",
+      "send_time_ns": 849995449232596,
+      "receive_time_ns": 849996480968788,
+      "latency_ms": 1031.736
+    },
+    {
+      "event_id": "join-l-93-r-93",
+      "send_time_ns": 849995449232596,
+      "receive_time_ns": 849996480969558,
+      "latency_ms": 1031.737
+    },
+    {
+      "event_id": "join-l-94-r-94",
+      "send_time_ns": 849995549247210,
+      "receive_time_ns": 849996480970228,
+      "latency_ms": 931.723
+    },
+    {
+      "event_id": "join-l-23-r-95",
+      "send_time_ns": 849995649235403,
+      "receive_time_ns": 849996480970848,
+      "latency_ms": 831.735
+    },
+    {
+      "event_id": "join-l-95-r-95",
+      "send_time_ns": 849995649235403,
+      "receive_time_ns": 849996480971478,
+      "latency_ms": 831.736
+    },
+    {
+      "event_id": "join-l-30-r-96",
+      "send_time_ns": 849995749233926,
+      "receive_time_ns": 849996480972058,
+      "latency_ms": 731.738
+    },
+    {
+      "event_id": "join-l-96-r-96",
+      "send_time_ns": 849995749233926,
+      "receive_time_ns": 849996480972628,
+      "latency_ms": 731.739
+    },
+    {
+      "event_id": "join-l-97-r-97",
+      "send_time_ns": 849995849236389,
+      "receive_time_ns": 849996480973268,
+      "latency_ms": 631.737
+    },
+    {
+      "event_id": "join-l-98-r-98",
+      "send_time_ns": 849995949256492,
+      "receive_time_ns": 849996480973928,
+      "latency_ms": 531.717
+    },
+    {
+      "event_id": "join-l-99-r-99",
+      "send_time_ns": 849996049260535,
+      "receive_time_ns": 849996480974658,
+      "latency_ms": 431.714
+    }
+  ]
+}

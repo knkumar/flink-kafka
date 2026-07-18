@@ -1,0 +1,29 @@
+{
+  "events": 12000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 1000,
+  "workload": "stream_stream_join",
+  "run_label": "stability_100",
+  "rate_per_sec": 100.0,
+  "expected_output_records": 1093417,
+  "produced_records": 24000,
+  "producer_topics": [
+    "bench-w5-latency-left-input",
+    "bench-w5-latency-right-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "6319a96a63365a969b67c4e54261dc305e0922dd43da80536542c410a53fd4da",
+  "input_topic": "bench-w5-latency-input",
+  "left_input_topic": "bench-w5-latency-left-input",
+  "right_input_topic": "bench-w5-latency-right-input",
+  "output_topic": "bench-w5-latency-output",
+  "application_id": "stream-state-bench-w5-latency-stream_stream_join-stability_100",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 2172.128,
+  "latency_p95_ms": 2762.18,
+  "latency_p99_ms": 2913.538
+}

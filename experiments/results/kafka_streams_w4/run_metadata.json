@@ -1,0 +1,16 @@
+{
+  "events": 1000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "workload": "sliding_sum",
+  "expected_output_records": 1099,
+  "producer_input_records": 1001,
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "a6aac9e01c355f0678f8785b856c752f68df43078d7b0dbe2f8879d4beef0f72",
+  "input_topic": "bench-w4-input",
+  "output_topic": "bench-w4-output",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed"
+}
