@@ -14,35 +14,21 @@ import subprocess
 import time
 from pathlib import Path
 
-# Constants for energy estimation
-PUE = 1.5  # Power Usage Effectiveness
-CPU_WATTS_MAX = 100.0  # Max CPU power in watts (assume 1 core = 100W for simplicity)
-CPU_WATTS_IDLE = 10.0
-MEM_WATTS_PER_GB = 0.5  # Watts per GB of memory
-CARBON_INTENSITY = 400.0  # gCO2eq/kWh
-
-def estimate_energy_costs(cpu_perc_str: str, mem_usage_str: str) -> tuple[float, float]:
-    """Estimate power in Watts and carbon intensity in gCO2eq/h."""
+def get_changelog_repartition_bytes(kafka_container: str) -> int:
+    """Measure the total size of changelog and repartition topics in Kafka."""
     try:
-        cpu_perc = float(cpu_perc_str.replace('%', ''))
-        # Parse mem usage roughly (e.g. "1.2GiB / 16GiB" or "50MiB / 16GiB")
-        mem_gb = 0.0
-        if 'GiB' in mem_usage_str:
-            mem_gb = float(mem_usage_str.split('/')[0].replace('GiB', '').strip())
-        elif 'MiB' in mem_usage_str:
-            mem_gb = float(mem_usage_str.split('/')[0].replace('MiB', '').strip()) / 1024
-        elif 'B' in mem_usage_str and 'iB' not in mem_usage_str:
-            mem_gb = float(mem_usage_str.split('/')[0].replace('B', '').strip()) / (1024 ** 3)
-        
-        cpu_power = CPU_WATTS_IDLE + (CPU_WATTS_MAX - CPU_WATTS_IDLE) * (cpu_perc / 100.0)
-        mem_power = mem_gb * MEM_WATTS_PER_GB
-        total_power = cpu_power + mem_power
-        total_power_with_pue = total_power * PUE
-        
-        carbon_g_per_hour = (total_power_with_pue / 1000.0) * CARBON_INTENSITY
-        return round(total_power_with_pue, 2), round(carbon_g_per_hour, 2)
+        cmd = [
+            "docker", "exec", kafka_container, "sh", "-c",
+            "du -sb /tmp/kraft-combined-logs/*changelog* /tmp/kraft-combined-logs/*repartition* /var/lib/kafka/data/*changelog* /var/lib/kafka/data/*repartition* 2>/dev/null | awk '{sum += $1} END {print sum}'"
+        ]
+        import subprocess
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        res = out.stdout.strip()
+        if res:
+            return int(res)
     except Exception:
-        return 0.0, 0.0
+        pass
+    return 0
 
 def poll_once(containers: list[str]) -> list[dict]:
     fmt = "{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
@@ -54,12 +40,16 @@ def poll_once(containers: list[str]) -> list[dict]:
     )
     rows = []
     ts = time.time()
+    kafka_container = next((c for c in containers if "kafka" in c and "streams" not in c), None)
+    kafka_bytes = 0
+    if kafka_container:
+        kafka_bytes = get_changelog_repartition_bytes(kafka_container)
+
     for line in out.stdout.strip().splitlines():
         parts = line.split("\t")
         if len(parts) != 5:
             continue
         name, cpu_perc, mem_usage, net_io, block_io = parts
-        power_w, carbon_gph = estimate_energy_costs(cpu_perc, mem_usage)
         rows.append(
             {
                 "timestamp": ts,
@@ -68,8 +58,7 @@ def poll_once(containers: list[str]) -> list[dict]:
                 "mem_usage": mem_usage,
                 "net_io": net_io,
                 "block_io": block_io,
-                "power_watts": power_w,
-                "carbon_gCO2eq_per_hour": carbon_gph,
+                "changelog_repartition_bytes": kafka_bytes if name == kafka_container else 0,
             }
         )
     return rows
@@ -87,7 +76,7 @@ def main() -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
         "timestamp", "container", "cpu_perc", "mem_usage", "net_io", "block_io",
-        "power_watts", "carbon_gCO2eq_per_hour"
+        "changelog_repartition_bytes"
     ]
     write_header = not out_path.exists()
     start = time.time()
