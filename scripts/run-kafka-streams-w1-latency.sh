@@ -83,47 +83,51 @@ PY
 fi
 
 docker compose -f "$COMPOSE_FILE" down -v --remove-orphans >/dev/null 2>&1 || true
-docker compose -f "$COMPOSE_FILE" up -d --build kafka
+docker compose -f "$COMPOSE_FILE" up -d --build kafka-1 kafka-2 kafka-3
 
 for _ in $(seq 1 60); do
-  if docker compose -f "$COMPOSE_FILE" exec -T kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list >/dev/null 2>&1; then
+  if docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 --list >/dev/null 2>&1; then
     break
   fi
   sleep 1
 done
 
-docker compose -f "$COMPOSE_FILE" exec -T kafka /opt/kafka/bin/kafka-topics.sh \
-  --bootstrap-server kafka:9092 \
+docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh \
+  --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
   --create --if-not-exists \
   --topic "$INPUT_TOPIC" \
   --partitions 1 \
-  --replication-factor 1 \
+  --replication-factor 3 \
+    --config min.insync.replicas=2 \
   --config message.timestamp.type=LogAppendTime
 
 if [[ "$WORKLOAD" == "stream_stream_join" ]]; then
-  docker compose -f "$COMPOSE_FILE" exec -T kafka /opt/kafka/bin/kafka-topics.sh \
-    --bootstrap-server kafka:9092 \
+  docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh \
+    --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
     --create --if-not-exists \
     --topic "$LEFT_INPUT_TOPIC" \
     --partitions 1 \
-    --replication-factor 1 \
+    --replication-factor 3 \
+    --config min.insync.replicas=2 \
     --config message.timestamp.type=LogAppendTime
 
-  docker compose -f "$COMPOSE_FILE" exec -T kafka /opt/kafka/bin/kafka-topics.sh \
-    --bootstrap-server kafka:9092 \
+  docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh \
+    --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
     --create --if-not-exists \
     --topic "$RIGHT_INPUT_TOPIC" \
     --partitions 1 \
-    --replication-factor 1 \
+    --replication-factor 3 \
+    --config min.insync.replicas=2 \
     --config message.timestamp.type=LogAppendTime
 fi
 
-docker compose -f "$COMPOSE_FILE" exec -T kafka /opt/kafka/bin/kafka-topics.sh \
-  --bootstrap-server kafka:9092 \
+docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh \
+  --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
   --create --if-not-exists \
   --topic "$OUTPUT_TOPIC" \
   --partitions 1 \
-  --replication-factor 1
+  --replication-factor 3 \
+    --config min.insync.replicas=2
 
 docker compose -f "$COMPOSE_FILE" up -d --build kafka-streams-identity
 sleep 5

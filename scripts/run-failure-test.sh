@@ -75,10 +75,10 @@ if [[ "$FAILURE_MODE" == "jvm_kill" ]]; then
     docker compose -f "$COMPOSE_FILE" start "$WORKER_CONTAINER"
     echo "Restarted worker."
 elif [[ "$FAILURE_MODE" == "broker_kill" ]]; then
-    docker compose -f "$COMPOSE_FILE" stop kafka
+    docker compose -f "$COMPOSE_FILE" stop kafka-1
     echo "Stopped broker. Waiting 5s..."
     sleep 5
-    docker compose -f "$COMPOSE_FILE" start kafka
+    docker compose -f "$COMPOSE_FILE" start kafka-1
     echo "Restarted broker."
 elif [[ "$FAILURE_MODE" == "node_loss" ]]; then
     docker compose -f "$COMPOSE_FILE" rm -fsv "$WORKER_CONTAINER"
@@ -87,7 +87,7 @@ elif [[ "$FAILURE_MODE" == "node_loss" ]]; then
     docker compose -f "$COMPOSE_FILE" up -d --no-deps "$WORKER_CONTAINER"
     echo "Restarted worker node."
 elif [[ "$FAILURE_MODE" == "kraft_failover" ]]; then
-    docker compose -f "$COMPOSE_FILE" restart kafka
+    docker compose -f "$COMPOSE_FILE" restart kafka-1
     echo "Restarted Kafka (KRaft failover). Waiting 5s..."
     sleep 5
 elif [[ "$FAILURE_MODE" == "s3_throttling" ]]; then
