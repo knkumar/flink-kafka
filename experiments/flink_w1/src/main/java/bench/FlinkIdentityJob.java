@@ -46,9 +46,9 @@ public final class FlinkIdentityJob {
 
         org.apache.flink.configuration.Configuration conf = new org.apache.flink.configuration.Configuration();
         String topologyId = "stream-state-bench-flink-" + workload;
-        conf.setString("state.checkpoints.dir", "file:///tmp/flink-checkpoints/" + topologyId);
+        conf.setString("state.checkpoints.dir", "s3://flink-checkpoints/" + topologyId);
         
-        java.io.File cpDir = new java.io.File("/tmp/flink-checkpoints/" + topologyId);
+        java.io.File cpDir = new java.io.File("/tmp/flink-checkpoints/" + topologyId) // Not used for s3;
         if (cpDir.exists() && cpDir.isDirectory()) {
             java.io.File[] jobDirs = cpDir.listFiles();
             if (jobDirs != null) {
