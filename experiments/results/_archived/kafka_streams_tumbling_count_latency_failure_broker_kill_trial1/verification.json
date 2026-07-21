@@ -1,0 +1,16 @@
+{
+  "workload": "tumbling_count",
+  "actual_jsonl": "experiments/results/kafka_streams_tumbling_count_latency_failure_broker_kill_trial1/actual.jsonl",
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "verification": {
+    "expected_count": 386,
+    "actual_count": 386,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}

@@ -22,14 +22,14 @@ esac
 echo "Starting failure test ($FAILURE_MODE) for $ENGINE $WORKLOAD at $RATE_PER_SEC/sec for $EVENTS events..."
 
 start_ms=0
-keys=100
+keys="${KEYS:-100}"
 case "$WORKLOAD" in
     w4) start_ms=600000 ;;
-    w5) start_ms=1000; keys=100000 ;;
+    w5) start_ms=1000; keys="${KEYS:-100000}" ;;
 esac
 
 # Start the latency runner in the background
-EVENTS="$EVENTS" RATE_PER_SEC="$RATE_PER_SEC" START_MS="$start_ms" KEYS="$keys" RUN_LABEL="failure_${FAILURE_MODE}" WORKLOAD="$local_workload_name" WORKLOAD_ID="${WORKLOAD}_latency" ./scripts/run-${ENGINE}-w1-latency.sh &
+EVENTS="$EVENTS" RATE_PER_SEC="$RATE_PER_SEC" START_MS="$start_ms" KEYS="$keys" RUN_LABEL="failure_${FAILURE_MODE}_trial${TRIAL:-1}" WORKLOAD="$local_workload_name" WORKLOAD_ID="${WORKLOAD}_latency" ./scripts/run-${ENGINE}-w1-latency.sh &
 PID=$!
 
 echo "Waiting $INJECT_DELAY seconds before injecting failure..."
@@ -38,10 +38,10 @@ sleep "$INJECT_DELAY"
 echo "Injecting $FAILURE_MODE into $ENGINE $WORKLOAD..."
 if [[ "$ENGINE" == "kafka-streams" ]]; then
     COMPOSE_FILE="experiments/kafka_streams_w1/docker-compose.yml"
-    WORKER_CONTAINER="kafka-streams-${local_workload_name//_/-}"
+    WORKER_CONTAINER="kafka-streams-identity"
 else
     COMPOSE_FILE="experiments/flink_w1/docker-compose.yml"
-    WORKER_CONTAINER="flink-${local_workload_name//_/-}"
+    WORKER_CONTAINER="flink-identity"
 fi
 
 export WORKLOAD="$local_workload_name"
@@ -60,11 +60,11 @@ export RIGHT_INPUT_TOPIC="bench-${TOPIC_ID}-right-input"
 # records (see docs/project_log.md, 2026-07-17).
 if [[ "$ENGINE" == "kafka-streams" ]]; then
     export OUTPUT_TOPIC="bench-${TOPIC_ID}-output"
-    export APPLICATION_ID="stream-state-bench-${TOPIC_ID}-${WORKLOAD}-failure_${FAILURE_MODE}"
+    export APPLICATION_ID="stream-state-bench-${TOPIC_ID}-${WORKLOAD}-failure_${FAILURE_MODE}_trial${TRIAL:-1}"
 else
     export OUTPUT_TOPIC="bench-${TOPIC_ID}-flink-output"
-    export GROUP_ID="stream-state-bench-flink-${TOPIC_ID}-failure_${FAILURE_MODE}"
-    export TRANSACTIONAL_ID_PREFIX="stream-state-bench-flink-${TOPIC_ID}-failure_${FAILURE_MODE}"
+    export GROUP_ID="stream-state-bench-flink-${TOPIC_ID}-failure_${FAILURE_MODE}_trial${TRIAL:-1}"
+    export TRANSACTIONAL_ID_PREFIX="stream-state-bench-flink-${TOPIC_ID}-failure_${FAILURE_MODE}_trial${TRIAL:-1}"
     export SOURCE_BOUNDED="false"
 fi
 

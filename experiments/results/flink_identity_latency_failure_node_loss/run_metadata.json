@@ -13,7 +13,7 @@
   ],
   "kafka_image": "apache/kafka:4.3.1",
   "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
-  "flink_app_image_id": "1035672e286ae3728b4563cdbd6f508fb8057040d234a8b4540331ae9cab67d1",
+  "flink_app_image_id": "3bd2c04aef11bb802c9141f02b27c7417b64060e0f1bc474b5e7e50a7093c04c",
   "flink_version": "2.2.0",
   "flink_kafka_connector_version": "5.0.0-2.2",
   "input_topic": "bench-identity-latency-input",
@@ -26,7 +26,7 @@
   "delivery_guarantee": "exactly_once",
   "consumer_isolation": "read_committed",
   "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
-  "latency_p50_ms": 1105.865,
-  "latency_p95_ms": 5209.004,
-  "latency_p99_ms": 9208.617
+  "latency_p50_ms": 1199.588,
+  "latency_p95_ms": 6376.663,
+  "latency_p99_ms": 10376.616
 }

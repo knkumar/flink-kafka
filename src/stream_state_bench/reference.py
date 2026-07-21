@@ -7,12 +7,12 @@ from .workloads import OutputRecord, filter_map, identity, sliding_sum, stream_s
 WORKLOADS = ("identity", "filter_map", "tumbling_count", "sliding_sum", "stream_stream_join")
 
 
-def reference_outputs(name: str, *, events: int, keys: int, seed: int, start_ms: int = 0) -> list[OutputRecord]:
+def reference_outputs(name: str, *, events: int, keys: int, seed: int, start_ms: int = 0, skew: bool = False) -> list[OutputRecord]:
     if name == "stream_stream_join":
-        left, right = paired_join_events(events, key_count=keys, seed=seed, start_ms=start_ms)
+        left, right = paired_join_events(events, key_count=keys, seed=seed, start_ms=start_ms, skew=skew)
         return stream_stream_join(left, right)
 
-    generated = uniform_events(events, key_count=keys, seed=seed, start_ms=start_ms)
+    generated = uniform_events(events, key_count=keys, seed=seed, start_ms=start_ms, skew=skew)
     if name == "identity":
         return identity(generated)
     if name == "filter_map":

@@ -13,7 +13,7 @@ run_stability() {
     if [[ -n "${TRIAL:-}" ]]; then
         trial_suffix="_trial${TRIAL}"
     fi
-    local run_label="stability_${RATE_PER_SEC}${trial_suffix}"
+    local run_label="${RUN_LABEL:-stability_${RATE_PER_SEC}${trial_suffix}}"
     local script="scripts/run-${engine}-w1-latency.sh"
     
     local start_ms=0

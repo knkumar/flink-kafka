@@ -1,0 +1,16 @@
+{
+  "workload": "tumbling_count",
+  "actual_jsonl": "experiments/results/kafka_streams_w3_latency_tuning-commit-10000_trial3/actual.jsonl",
+  "events": 6000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "verification": {
+    "expected_count": 997,
+    "actual_count": 997,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "tumbling_count",
+  "run_label": "failure_broker_kill_trial2",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 386,
+  "produced_records": 2001,
+  "producer_topics": [
+    "bench-tumbling-count-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "7bc098ee57f0d901f718bfb9b92de35639bfd24c0d93786516568aad08c23093",
+  "input_topic": "bench-tumbling-count-latency-input",
+  "left_input_topic": "bench-tumbling-count-latency-left-input",
+  "right_input_topic": "bench-tumbling-count-latency-right-input",
+  "output_topic": "bench-tumbling-count-latency-output",
+  "application_id": "stream-state-bench-tumbling-count-latency-tumbling_count-failure_broker_kill_trial2",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 5337.986,
+  "latency_p95_ms": 14680.936,
+  "latency_p99_ms": 24074.641
+}

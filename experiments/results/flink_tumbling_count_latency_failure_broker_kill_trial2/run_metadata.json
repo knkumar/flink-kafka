@@ -1,0 +1,32 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "tumbling_count",
+  "run_label": "failure_broker_kill_trial2",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 386,
+  "produced_records": 2001,
+  "producer_topics": [
+    "bench-tumbling-count-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "flink_app_image_id": "0b27da6fdda441123bb87672a3b7c74dbbac332c56edd9dc4499f558a4bf76ff",
+  "flink_version": "2.2.0",
+  "flink_kafka_connector_version": "5.0.0-2.2",
+  "input_topic": "bench-tumbling-count-latency-input",
+  "left_input_topic": "bench-tumbling-count-latency-left-input",
+  "right_input_topic": "bench-tumbling-count-latency-right-input",
+  "output_topic": "bench-tumbling-count-latency-flink-output",
+  "group_id": "stream-state-bench-flink-tumbling-count-latency-failure_broker_kill_trial2",
+  "transactional_id_prefix": "stream-state-bench-flink-tumbling-count-latency-failure_broker_kill_trial2",
+  "source_bounded": false,
+  "delivery_guarantee": "exactly_once",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 4525.475,
+  "latency_p95_ms": 13750.297,
+  "latency_p99_ms": 23284.491
+}

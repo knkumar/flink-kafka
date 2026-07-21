@@ -45,12 +45,18 @@ cleanup() {
 }
 trap cleanup EXIT
 
+SKEW_ARG=""
+if [[ "${SKEW:-false}" == "true" ]]; then
+  SKEW_ARG="--skew"
+fi
+
 PYTHONPATH=src python3 -m stream_state_bench.generate_input \
   --workload "$WORKLOAD" \
   --events "$EVENTS" \
   --keys "$KEYS" \
   --seed "$SEED" \
   --start-ms "$START_MS" \
+  $SKEW_ARG \
   --input-tsv "$INPUT_TSV" \
   --left-input-tsv "$LEFT_INPUT_TSV" \
   --right-input-tsv "$RIGHT_INPUT_TSV" \
@@ -96,7 +102,7 @@ docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh
   --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
   --create --if-not-exists \
   --topic "$INPUT_TOPIC" \
-  --partitions 1 \
+  --partitions ${KAFKA_PARTITIONS:-1} \
   --replication-factor 3 \
     --config min.insync.replicas=2 \
   --config message.timestamp.type=LogAppendTime
@@ -106,7 +112,7 @@ if [[ "$WORKLOAD" == "stream_stream_join" ]]; then
     --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
     --create --if-not-exists \
     --topic "$LEFT_INPUT_TOPIC" \
-    --partitions 1 \
+    --partitions ${KAFKA_PARTITIONS:-1} \
     --replication-factor 3 \
     --config min.insync.replicas=2 \
     --config message.timestamp.type=LogAppendTime
@@ -115,7 +121,7 @@ if [[ "$WORKLOAD" == "stream_stream_join" ]]; then
     --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
     --create --if-not-exists \
     --topic "$RIGHT_INPUT_TOPIC" \
-    --partitions 1 \
+    --partitions ${KAFKA_PARTITIONS:-1} \
     --replication-factor 3 \
     --config min.insync.replicas=2 \
     --config message.timestamp.type=LogAppendTime
@@ -125,7 +131,7 @@ docker compose -f "$COMPOSE_FILE" exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh
   --bootstrap-server kafka-1:9092,kafka-2:9092,kafka-3:9092 \
   --create --if-not-exists \
   --topic "$OUTPUT_TOPIC" \
-  --partitions 1 \
+  --partitions ${KAFKA_PARTITIONS:-1} \
   --replication-factor 3 \
     --config min.insync.replicas=2
 
@@ -143,7 +149,7 @@ PROBE_ARGS=(
   --output-topic "$OUTPUT_TOPIC" \
   --expected-count "$EXPECTED_COUNT" \
   --rate-per-sec "$RATE_PER_SEC" \
-  --timeout-sec "$(( (EVENTS / RATE_PER_SEC) + 120 ))" \
+  --timeout-sec "$(( (EVENTS / RATE_PER_SEC) + 60 ))" \
   --consumer-isolation read_committed \
   --docker-network kafka_streams_w1_default
 )

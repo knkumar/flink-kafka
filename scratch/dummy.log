@@ -1,0 +1,1 @@
+flink-identity-1                  | [SlidingEventTimeWindows -> kafka-sink: Writer -> kafka-sink: Committer (1/1)#0] INFO org.apache.flink.runtime.state.heap.HeapRestoreOperation - Starting to restore from state handle: KeyGroupsStateHandle

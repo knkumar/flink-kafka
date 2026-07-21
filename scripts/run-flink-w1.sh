@@ -32,6 +32,7 @@ TRANSACTIONAL_ID_PREFIX="stream-state-bench-flink-${WORKLOAD_ID}"
 export WORKLOAD INPUT_TOPIC LEFT_INPUT_TOPIC RIGHT_INPUT_TOPIC OUTPUT_TOPIC GROUP_ID TRANSACTIONAL_ID_PREFIX
 
 mkdir -p "$RESULT_DIR"
+docker run --rm -v "$(pwd)/experiments/flink_w1/checkpoints:/checkpoints" ubuntu:latest rm -rf /checkpoints/* || true
 
 cleanup() {
   docker compose -f "$COMPOSE_FILE" logs --no-color > "$LOG_FILE" 2>/dev/null || true

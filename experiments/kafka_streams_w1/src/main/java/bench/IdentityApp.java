@@ -54,6 +54,9 @@ public final class IdentityApp {
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, commitIntervalMs);
+        
+        int parallelism = Integer.parseInt(System.getenv().getOrDefault("PARALLELISM", "1"));
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, parallelism);
         props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, cacheMaxBytes);
 
         StreamsBuilder builder = new StreamsBuilder();

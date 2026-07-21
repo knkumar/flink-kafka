@@ -6,9 +6,9 @@ from pathlib import Path
 
 def get_lag(compose_file: Path, group_id: str) -> dict[str, int]:
     cmd = [
-        "docker", "compose", "-f", str(compose_file), "exec", "-T", "kafka",
+        "docker", "compose", "-f", str(compose_file), "exec", "-T", "kafka-1",
         "/opt/kafka/bin/kafka-consumer-groups.sh",
-        "--bootstrap-server", "kafka:9092",
+        "--bootstrap-server", "kafka-1:9092",
         "--describe", "--group", group_id
     ]
     try:

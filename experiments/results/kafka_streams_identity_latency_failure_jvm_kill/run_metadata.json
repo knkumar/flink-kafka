@@ -13,7 +13,7 @@
   ],
   "kafka_image": "apache/kafka:4.3.1",
   "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
-  "streams_image_id": "80ecaabc9777108cafb50a4859f245770f7957881aca74b3f6f183767d512455",
+  "streams_image_id": "3ebffa8e7482732b92a9f1fcbd73cab420d360125641fb4ac4c4585caaa83721",
   "input_topic": "bench-identity-latency-input",
   "left_input_topic": "bench-identity-latency-left-input",
   "right_input_topic": "bench-identity-latency-right-input",
@@ -22,7 +22,7 @@
   "processing_guarantee": "exactly_once_v2",
   "consumer_isolation": "read_committed",
   "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
-  "latency_p50_ms": 1623.856,
-  "latency_p95_ms": 39977.178,
-  "latency_p99_ms": 43976.654
+  "latency_p50_ms": 1386.088,
+  "latency_p95_ms": 39541.017,
+  "latency_p99_ms": 43540.175
 }

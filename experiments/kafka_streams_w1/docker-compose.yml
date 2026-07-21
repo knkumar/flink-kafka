@@ -93,6 +93,7 @@ services:
       WORKLOAD: "${WORKLOAD:-identity}"
       COMMIT_INTERVAL_MS: "${COMMIT_INTERVAL_MS:-1000}"
       CACHE_MAX_BYTES: "${CACHE_MAX_BYTES:-10485760}"
+      PARALLELISM: "${PARALLELISM:-1}"
     deploy:
       resources:
         limits:

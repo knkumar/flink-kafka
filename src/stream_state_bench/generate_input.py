@@ -23,12 +23,13 @@ def write_inputs(
     start_ms: int = 0,
     left_input_tsv: Path | None = None,
     right_input_tsv: Path | None = None,
+    skew: bool = False,
 ) -> None:
     input_tsv.parent.mkdir(parents=True, exist_ok=True)
     expected_jsonl.parent.mkdir(parents=True, exist_ok=True)
 
     if workload == "stream_stream_join":
-        left, right = paired_join_events(events, key_count=keys, seed=seed, start_ms=start_ms)
+        left, right = paired_join_events(events, key_count=keys, seed=seed, start_ms=start_ms, skew=skew)
         input_tsv.write_text("".join(event_line(event) for event in [*left, *right]), encoding="utf-8")
         if left_input_tsv is not None:
             left_input_tsv.parent.mkdir(parents=True, exist_ok=True)
@@ -37,10 +38,10 @@ def write_inputs(
             right_input_tsv.parent.mkdir(parents=True, exist_ok=True)
             right_input_tsv.write_text("".join(event_line(event) for event in right), encoding="utf-8")
     else:
-        generated = uniform_events(events, key_count=keys, seed=seed, start_ms=start_ms)
+        generated = uniform_events(events, key_count=keys, seed=seed, start_ms=start_ms, skew=skew)
         input_tsv.write_text("".join(event_line(event) for event in generated), encoding="utf-8")
 
-    expected = reference_outputs(workload, events=events, keys=keys, seed=seed, start_ms=start_ms)
+    expected = reference_outputs(workload, events=events, keys=keys, seed=seed, start_ms=start_ms, skew=skew)
     expected_jsonl.write_text(
         "".join(
             json.dumps(
@@ -60,11 +61,8 @@ def write_inputs(
         encoding="utf-8",
     )
 
-
-def write_identity_inputs(*, events: int, keys: int, seed: int, input_tsv: Path, expected_jsonl: Path) -> None:
-    write_inputs(workload="identity", events=events, keys=keys, seed=seed, input_tsv=input_tsv, expected_jsonl=expected_jsonl)
-
-
+def write_identity_inputs(*, events: int, keys: int, seed: int, input_tsv: Path, expected_jsonl: Path, skew: bool = False) -> None:
+    write_inputs(workload="identity", events=events, keys=keys, seed=seed, input_tsv=input_tsv, expected_jsonl=expected_jsonl, skew=skew)
 
 def parse_scale(value: str) -> int:
     v = value.lower()
@@ -83,6 +81,7 @@ def main() -> int:
     parser.add_argument("--keys", type=parse_scale, default=100)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--start-ms", type=int, default=0)
+    parser.add_argument("--skew", action="store_true", help="Generate skewed (80/20) keys")
     parser.add_argument("--input-tsv", type=Path, default=Path("experiments/results/w1_input.tsv"))
     parser.add_argument("--left-input-tsv", type=Path)
     parser.add_argument("--right-input-tsv", type=Path)
@@ -95,6 +94,7 @@ def main() -> int:
         keys=args.keys,
         seed=args.seed,
         start_ms=args.start_ms,
+        skew=args.skew,
         input_tsv=args.input_tsv,
         left_input_tsv=args.left_input_tsv,
         right_input_tsv=args.right_input_tsv,

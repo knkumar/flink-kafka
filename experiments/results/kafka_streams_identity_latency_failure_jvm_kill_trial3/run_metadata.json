@@ -1,0 +1,28 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "identity",
+  "run_label": "failure_jvm_kill_trial3",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 2000,
+  "produced_records": 2000,
+  "producer_topics": [
+    "bench-identity-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "c3783ac5e3210a5ebf324364c3a89b2561be8056b3e4541a82d8783db562774e",
+  "input_topic": "bench-identity-latency-input",
+  "left_input_topic": "bench-identity-latency-left-input",
+  "right_input_topic": "bench-identity-latency-right-input",
+  "output_topic": "bench-identity-latency-output",
+  "application_id": "stream-state-bench-identity-latency-identity-failure_jvm_kill_trial3",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 1589.919,
+  "latency_p95_ms": 41250.198,
+  "latency_p99_ms": 45249.707
+}

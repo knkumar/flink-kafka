@@ -1,0 +1,28 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "identity",
+  "run_label": "failure_s3_throttling",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 2000,
+  "produced_records": 2000,
+  "producer_topics": [
+    "bench-identity-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "012169db8942c77e3e91711d0cbf41b209d95f04f7b43c84c065a5ac51dd44d7",
+  "input_topic": "bench-identity-latency-input",
+  "left_input_topic": "bench-identity-latency-left-input",
+  "right_input_topic": "bench-identity-latency-right-input",
+  "output_topic": "bench-identity-latency-output",
+  "application_id": "stream-state-bench-identity-latency-identity-failure_s3_throttling",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 1219.519,
+  "latency_p95_ms": 1920.316,
+  "latency_p99_ms": 2036.042
+}

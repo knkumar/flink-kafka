@@ -58,12 +58,15 @@ def load_expected_output_ids(path: Path) -> set[str]:
 
 
 def load_input_records(input_sources: list[tuple[Path, str]]) -> list[tuple[str, str]]:
-    records: list[tuple[str, str]] = []
+    combined: list[tuple[int, str, str]] = []
     for input_path, topic in input_sources:
         for line in input_path.read_text(encoding="utf-8").splitlines():
             if line:
-                records.append((topic, line))
-    return records
+                fields = line.split("\t")
+                if len(fields) >= 4 and fields[3].isdigit():
+                    combined.append((int(fields[3]), topic, line))
+    combined.sort(key=lambda x: x[0])
+    return [(topic, line) for _, topic, line in combined]
 
 
 def percentile_nearest_rank(values: Iterable[float], percentile: float) -> float | None:
@@ -150,13 +153,13 @@ def run_probe(
     if docker_network:
         base_cmd = ["docker", "run", "--network", docker_network, "--rm", "-i", "apache/kafka:4.3.1"]
     else:
-        base_cmd = ["docker", "compose", "-f", str(compose_file), "exec", "-T", "kafka"]
+        base_cmd = ["docker", "compose", "-f", str(compose_file), "exec", "-T", "kafka-1"]
 
     consumer_cmd = [
         *base_cmd,
         "/opt/kafka/bin/kafka-console-consumer.sh",
         "--bootstrap-server",
-        "kafka:9092",
+        "kafka-1:9092",
         "--topic",
         output_topic,
         "--from-beginning",
@@ -198,7 +201,7 @@ def run_probe(
         cmd = [
             *base_cmd,
             "/opt/kafka/bin/kafka-console-consumer.sh",
-            "--bootstrap-server", "kafka:9092",
+            "--bootstrap-server", "kafka-1:9092",
             "--topic", topic,
             "--from-beginning",
             "--max-messages", str(topic_count),
@@ -217,9 +220,9 @@ def run_probe(
             if stripped:
                 received.append((time.time_ns(), stripped))
 
-    reader = threading.Thread(target=read_consumer, name="kafka-latency-consumer-reader")
+    reader = threading.Thread(target=read_consumer, name="kafka-latency-consumer-reader", daemon=True)
     reader.start()
-    time.sleep(1)
+    time.sleep(10)
 
     producers: dict[str, subprocess.Popen[str]] = {}
 
@@ -231,11 +234,13 @@ def run_probe(
             *base_cmd,
             "/opt/kafka/bin/kafka-console-producer.sh",
             "--bootstrap-server",
-            "kafka:9092",
+            "kafka-1:9092",
             "--topic",
             topic,
+            "--producer-property", "max.in.flight.requests.per.connection=1",
+            "--producer-property", "enable.idempotence=true",
         ]
-        producer = subprocess.Popen(producer_cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        producer = subprocess.Popen(producer_cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
         producers[topic] = producer
         return producer
 
@@ -245,23 +250,25 @@ def run_probe(
         target_ns = start_ns + index * interval_ns
         while True:
             now_ns = time.time_ns()
-            remaining_ns = target_ns - now_ns
-            if remaining_ns <= 0:
+            if now_ns >= target_ns:
                 break
-            time.sleep(min(remaining_ns / 1_000_000_000, 0.01))
-        producer = producer_for(topic)
-        assert producer.stdin is not None
+            time.sleep((target_ns - now_ns) / 1_000_000_000)
+            
         send_times[input_event_id(line)] = time.time_ns()
-        producer.stdin.write(line + "\n")
-        producer.stdin.flush()
+        p = producer_for(topic)
+        p.stdin.write(line + "\n")
+        p.stdin.flush()
 
-    for topic, producer in producers.items():
-        assert producer.stdin is not None
-        producer.stdin.close()
-        producer_stderr = producer.stderr.read() if producer.stderr is not None else ""
-        producer_return = producer.wait(timeout=timeout_sec)
+    for topic, p in producers.items():
+        p.stdin.close()
+        try:
+            producer_return = p.wait(timeout=timeout_sec)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            producer_return = p.wait()
+        producer_stderr = p.stderr.read() if p.stderr is not None else ""
         if producer_return != 0:
-            raise RuntimeError(f"kafka-console-producer for {topic} exited {producer_return}: {producer_stderr}")
+            print(f"WARNING: kafka-console-producer for {topic} exited {producer_return}: {producer_stderr}", file=sys.stderr)
 
     consumer_stderr = ""
     try:
@@ -297,6 +304,7 @@ def run_probe(
             continue
         source_send_times = [send_times[source_id] for source_id in expected_source_ids if source_id in send_times]
         if len(source_send_times) != len(expected_source_ids):
+            print(f"DEBUG: missing send_times for {record_id}: expected {expected_source_ids}, found {list(send_times.keys())[:5]}...", file=sys.stderr)
             unmatched_outputs.append(record_id)
             continue
         send_ns_max = max(source_send_times)

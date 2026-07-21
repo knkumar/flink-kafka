@@ -1,0 +1,16 @@
+{
+  "workload": "stream_stream_join",
+  "actual_jsonl": "experiments/results/kafka_streams_w5_repeat_trial3/actual.jsonl",
+  "events": 1000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 1000,
+  "verification": {
+    "expected_count": 11024,
+    "actual_count": 11024,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}
