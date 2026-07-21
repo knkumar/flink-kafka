@@ -4,6 +4,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
+
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
@@ -68,7 +73,29 @@ public final class IdentityApp {
             buildStreamJoinTopology(builder, leftInputTopic, rightInputTopic, outputTopic);
         } else {
             builder.stream(inputTopic, Consumed.with(Serdes.String(), Serdes.String()))
-                    .flatMapValues(value -> transform(workload, value))
+                    .process(new ProcessorSupplier<String, String, String, String>() {
+                        @Override
+                        public Processor<String, String, String, String> get() {
+                            return new Processor<String, String, String, String>() {
+                                private ProcessorContext<String, String> context;
+                                @Override
+                                public void init(ProcessorContext<String, String> context) {
+                                    this.context = context;
+                                }
+                                @Override
+                                public void process(Record<String, String> record) {
+                                    long wmMs = record.timestamp();
+                                    long teMs = System.currentTimeMillis();
+                                    List<String> values = bench.IdentityApp.transform(workload, record.value(), wmMs, teMs);
+                                    for (String v : values) {
+                                        context.forward(record.withValue(v));
+                                    }
+                                }
+                                @Override
+                                public void close() {}
+                            };
+                        }
+                    })
                     .to(outputTopic, Produced.with(Serdes.String(), Serdes.String()));
         }
 
@@ -85,12 +112,12 @@ public final class IdentityApp {
     }
 
     static String toOutputJson(String eventLine) {
-        return toIdentityJson(eventLine);
+        return toIdentityJson(eventLine, 0, System.currentTimeMillis());
     }
 
-    static List<String> transform(String workload, String eventLine) {
+    static List<String> transform(String workload, String eventLine, long wmMs, long teMs) {
         if ("identity".equals(workload)) {
-            return Collections.singletonList(toIdentityJson(eventLine));
+            return Collections.singletonList(toIdentityJson(eventLine, wmMs, teMs));
         }
         if ("filter_map".equals(workload)) {
             String[] fields = parse(eventLine);
@@ -98,7 +125,7 @@ public final class IdentityApp {
             if (payload % 2 != 0) {
                 return Collections.emptyList();
             }
-            return Collections.singletonList(toFilterMapJson(fields[0], Integer.parseInt(fields[1]), payload));
+            return Collections.singletonList(toFilterMapJson(fields[0], Integer.parseInt(fields[1]), payload, wmMs, teMs));
         }
         throw new IllegalArgumentException("Unsupported workload: " + workload);
     }
@@ -118,9 +145,27 @@ public final class IdentityApp {
                                 .withValueSerde(Serdes.String()))
                 .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
                 .toStream()
-                .filter((windowedKey, value) -> !"__tick__".equals(windowedKey.key()))
-                .mapValues(IdentityApp::toTumblingCountJson)
-                .selectKey((windowedKey, value) -> windowedKey.key())
+                .process(new ProcessorSupplier<Windowed<String>, String, String, String>() {
+                    @Override
+                    public Processor<Windowed<String>, String, String, String> get() {
+                        return new Processor<Windowed<String>, String, String, String>() {
+                            private ProcessorContext<String, String> context;
+                            @Override
+                            public void init(ProcessorContext<String, String> context) {
+                                this.context = context;
+                            }
+                            @Override
+                            public void process(Record<Windowed<String>, String> record) {
+                                if ("__tick__".equals(record.key().key())) return;
+                                long wmMs = record.timestamp(); 
+                                long teMs = System.currentTimeMillis();
+                                context.forward(new Record<>(record.key().key(), bench.IdentityApp.toTumblingCountJson(record.key(), record.value(), wmMs, teMs), record.timestamp()));
+                            }
+                            @Override
+                            public void close() {}
+                        };
+                    }
+                })
                 .to(outputTopic, Produced.with(Serdes.String(), Serdes.String()));
     }
 
@@ -137,9 +182,30 @@ public final class IdentityApp {
                 .selectKey((key, value) -> parse(value)[1]);
         left.join(
                         right,
-                        IdentityApp::toJoinJson,
+                        (l, r) -> l + "\n" + r,
                         JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMillis(JOIN_WINDOW_MS)),
                         StreamJoined.with(Serdes.String(), Serdes.String(), Serdes.String()))
+                .process(new ProcessorSupplier<String, String, String, String>() {
+                    @Override
+                    public Processor<String, String, String, String> get() {
+                        return new Processor<String, String, String, String>() {
+                            private ProcessorContext<String, String> context;
+                            @Override
+                            public void init(ProcessorContext<String, String> context) {
+                                this.context = context;
+                            }
+                            @Override
+                            public void process(Record<String, String> record) {
+                                String[] parts = record.value().split("\n");
+                                long wmMs = record.timestamp();
+                                long teMs = System.currentTimeMillis();
+                                context.forward(record.withValue(bench.IdentityApp.toJoinJson(parts[0], parts[1], wmMs, teMs)));
+                            }
+                            @Override
+                            public void close() {}
+                        };
+                    }
+                })
                 .to(outputTopic, Produced.with(Serdes.String(), Serdes.String()));
     }
 
@@ -159,13 +225,31 @@ public final class IdentityApp {
                                 .withValueSerde(Serdes.String()))
                 .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
                 .toStream()
-                .filter((windowedKey, value) -> !"__tick__".equals(windowedKey.key()))
-                .mapValues(IdentityApp::toSlidingSumJson)
-                .selectKey((windowedKey, value) -> windowedKey.key())
+                .process(new ProcessorSupplier<Windowed<String>, String, String, String>() {
+                    @Override
+                    public Processor<Windowed<String>, String, String, String> get() {
+                        return new Processor<Windowed<String>, String, String, String>() {
+                            private ProcessorContext<String, String> context;
+                            @Override
+                            public void init(ProcessorContext<String, String> context) {
+                                this.context = context;
+                            }
+                            @Override
+                            public void process(Record<Windowed<String>, String> record) {
+                                if ("__tick__".equals(record.key().key())) return;
+                                long wmMs = record.timestamp(); 
+                                long teMs = System.currentTimeMillis();
+                                context.forward(new Record<>(record.key().key(), bench.IdentityApp.toSlidingSumJson(record.key(), record.value(), wmMs, teMs), record.timestamp()));
+                            }
+                            @Override
+                            public void close() {}
+                        };
+                    }
+                })
                 .to(outputTopic, Produced.with(Serdes.String(), Serdes.String()));
     }
 
-    private static String toIdentityJson(String eventLine) {
+    private static String toIdentityJson(String eventLine, long wmMs, long teMs) {
         String[] fields = eventLine.split("\\t", -1);
         validate(fields);
         String eventId = fields[0];
@@ -180,7 +264,7 @@ public final class IdentityApp {
                 + "\"source_event_ids\":[\"" + escape(eventId) + "\"]}";
     }
 
-    private static String toFilterMapJson(String eventId, int key, int payload) {
+    private static String toFilterMapJson(String eventId, int key, int payload, long wmMs, long teMs) {
         return "{\"output_id\":\"fm-" + escape(eventId) + "\","
                 + "\"key\":" + key + ","
                 + "\"window_start_ms\":null,"
@@ -190,7 +274,7 @@ public final class IdentityApp {
                 + "\"source_event_ids\":[\"" + escape(eventId) + "\"]}";
     }
 
-    private static String toTumblingCountJson(Windowed<String> windowedKey, String eventIds) {
+    static String toTumblingCountJson(Windowed<String> windowedKey, String eventIds, long wmMs, long teMs) {
         List<String> ids = new ArrayList<>();
         for (String eventId : eventIds.split("\\n")) {
             if (!eventId.isBlank()) {
@@ -210,7 +294,7 @@ public final class IdentityApp {
                 + "\"source_event_ids\":" + toJsonStringArray(ids) + "}";
     }
 
-    private static String toSlidingSumJson(Windowed<String> windowedKey, String aggregate) {
+    static String toSlidingSumJson(Windowed<String> windowedKey, String aggregate, long wmMs, long teMs) {
         String[] lines = aggregate.split("\\n");
         long sum = Long.parseLong(lines[0]);
         List<String> ids = new ArrayList<>();
@@ -232,7 +316,7 @@ public final class IdentityApp {
                 + "\"source_event_ids\":" + toJsonStringArray(ids) + "}";
     }
 
-    private static String toJoinJson(String leftLine, String rightLine) {
+    static String toJoinJson(String leftLine, String rightLine, long wmMs, long teMs) {
         String[] left = parse(leftLine);
         String[] right = parse(rightLine);
         String leftId = left[0];

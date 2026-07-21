@@ -19,6 +19,63 @@ def input_event_id(line: str) -> str:
     return fields[0]
 
 
+def compute_sample(
+    record_id: str,
+    expected_record: dict[str, object],
+    send_times: dict[str, int],
+    t1_times: dict[str, int],
+    receive_ns: int,
+    line: str,
+    allowed_lateness_ms: int,
+) -> dict[str, float | str] | None:
+    expected_source_ids = expected_record["source_ids"]
+    expected_window_end_ms = expected_record.get("window_end_ms")
+    
+    source_send_times = [send_times[source_id] for source_id in expected_source_ids if source_id in send_times]
+    if len(source_send_times) != len(expected_source_ids):
+        return None
+    send_ns_max = max(source_send_times)
+    
+    t0_ms = send_ns_max / 1_000_000
+    t3_ms = receive_ns / 1_000_000
+    
+    source_t1s = [t1_times[sid] for sid in expected_source_ids if sid in t1_times]
+    t1_ms = max(source_t1s) if source_t1s else None
+    
+    try:
+        payload = json.loads(line)
+        t2_ms = float(payload.get("t2_ms")) if "t2_ms" in payload else None
+        t_e_ms = float(payload.get("t_e_ms")) if "t_e_ms" in payload else None
+        wm_ms = float(payload.get("wm_ms")) if "wm_ms" in payload else None
+    except (ValueError, TypeError):
+        t2_ms = None
+        t_e_ms = None
+        wm_ms = None
+        
+    latency_ms = round(t3_ms - t0_ms, 3)
+    l_closure_ms = None
+    if t2_ms is not None and expected_window_end_ms is not None:
+        l_closure_ms = round(t2_ms - (expected_window_end_ms + allowed_lateness_ms), 3)
+
+    return {
+        "event_id": record_id,
+        "t0_ms": t0_ms,
+        "t1_ms": t1_ms,
+        "t_e_ms": t_e_ms,
+        "wm_ms": wm_ms,
+        "t2_ms": t2_ms,
+        "t3_ms": t3_ms,
+        "write_to_input_append_latency_ms": round(t1_ms - t0_ms, 3) if t1_ms is not None else None,
+        "semantic_wait_ms": round(t_e_ms - t1_ms, 3) if t_e_ms is not None and t1_ms is not None else None,
+        "engine_compute_ms": round(t2_ms - t_e_ms, 3) if t2_ms is not None and t_e_ms is not None else None,
+        "visibility_ms": round(t3_ms - t2_ms, 3) if t3_ms is not None and t2_ms is not None else None,
+        "input_append_to_result_emission_latency_ms": round(t2_ms - t1_ms, 3) if t2_ms is not None and t1_ms is not None else None,
+        "l_visibility_ms": round(t3_ms - t2_ms, 3) if t3_ms is not None and t2_ms is not None else None,
+        "l_closure_ms": l_closure_ms,
+        "latency_ms": latency_ms,
+    }
+
+
 def output_event_id(line: str) -> str:
     record_id, _ = output_record_id_and_sources(line)
     return record_id
@@ -92,9 +149,11 @@ def summarize_samples(samples: list[dict[str, float | str]], *, rate_per_sec: fl
         "max_ms": max(latencies) if latencies else None,
     }
     
-    for comp in ["write_to_input_append_latency_ms", "input_append_to_result_emission_latency_ms", "l_visibility_ms", "l_closure_ms"]:
+    for comp in ["write_to_input_append_latency_ms", "semantic_wait_ms", "engine_compute_ms", "visibility_ms", "input_append_to_result_emission_latency_ms", "l_visibility_ms", "l_closure_ms"]:
         comp_vals = [float(s[comp]) for s in samples if s.get(comp) is not None]
         if comp_vals:
+            summary[f"p50_{comp}"] = percentile_nearest_rank(comp_vals, 50)
+            summary[f"p95_{comp}"] = percentile_nearest_rank(comp_vals, 95)
             summary[f"p99_{comp}"] = percentile_nearest_rank(comp_vals, 99)
             
     return summary
@@ -115,8 +174,8 @@ def write_latency_outputs(
     )
     with latency_csv.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=[
-            "event_id", "t0_ms", "t1_ms", "t2_ms", "t3_ms", 
-            "write_to_input_append_latency_ms", "input_append_to_result_emission_latency_ms", "l_visibility_ms", "l_closure_ms", "latency_ms"
+            "event_id", "t0_ms", "t1_ms", "t_e_ms", "wm_ms", "t2_ms", "t3_ms", 
+            "write_to_input_append_latency_ms", "semantic_wait_ms", "engine_compute_ms", "visibility_ms", "input_append_to_result_emission_latency_ms", "l_visibility_ms", "l_closure_ms", "latency_ms"
         ])
         writer.writeheader()
         writer.writerows(samples)
@@ -297,47 +356,19 @@ def run_probe(
         if expected_record is None:
             unmatched_outputs.append(record_id)
             continue
-        expected_source_ids = expected_record["source_ids"]
-        expected_window_end_ms = expected_record.get("window_end_ms")
-        if False:
+        sample = compute_sample(
+            record_id=record_id,
+            expected_record=expected_record,
+            send_times=send_times,
+            t1_times=t1_times,
+            receive_ns=receive_ns,
+            line=line,
+            allowed_lateness_ms=allowed_lateness_ms,
+        )
+        if sample is None:
+            print(f"DEBUG: missing send_times for {record_id}: expected {expected_record['source_ids']}, found {list(send_times.keys())[:5]}...", file=sys.stderr)
             unmatched_outputs.append(record_id)
             continue
-        source_send_times = [send_times[source_id] for source_id in expected_source_ids if source_id in send_times]
-        if len(source_send_times) != len(expected_source_ids):
-            print(f"DEBUG: missing send_times for {record_id}: expected {expected_source_ids}, found {list(send_times.keys())[:5]}...", file=sys.stderr)
-            unmatched_outputs.append(record_id)
-            continue
-        send_ns_max = max(source_send_times)
-        
-        t0_ms = send_ns_max / 1_000_000
-        t3_ms = receive_ns / 1_000_000
-        
-        source_t1s = [t1_times[sid] for sid in expected_source_ids if sid in t1_times]
-        t1_ms = max(source_t1s) if source_t1s else None
-        
-        try:
-            payload = json.loads(line)
-            t2_ms = float(payload.get("t2_ms")) if "t2_ms" in payload else None
-        except (ValueError, TypeError):
-            t2_ms = None
-            
-        latency_ms = round(t3_ms - t0_ms, 3)
-        l_closure_ms = None
-        if t2_ms is not None and expected_window_end_ms is not None:
-            l_closure_ms = round(t2_ms - (expected_window_end_ms + allowed_lateness_ms), 3)
-
-        sample = {
-            "event_id": record_id,
-            "t0_ms": t0_ms,
-            "t1_ms": t1_ms,
-            "t2_ms": t2_ms,
-            "t3_ms": t3_ms,
-            "write_to_input_append_latency_ms": round(t1_ms - t0_ms, 3) if t1_ms is not None else None,
-            "input_append_to_result_emission_latency_ms": round(t2_ms - t1_ms, 3) if t2_ms is not None and t1_ms is not None else None,
-            "l_visibility_ms": round(t3_ms - t2_ms, 3) if t3_ms is not None and t2_ms is not None else None,
-            "l_closure_ms": l_closure_ms,
-            "latency_ms": latency_ms,
-        }
         samples.append(sample)
 
     sample_ids = {str(sample["event_id"]) for sample in samples}

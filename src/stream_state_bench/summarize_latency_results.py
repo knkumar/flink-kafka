@@ -40,6 +40,15 @@ def load_rows(results_dir: Path) -> list[dict[str, object]]:
                 "p95_ms": summary["p95_ms"],
                 "p99_ms": summary["p99_ms"],
                 "max_ms": summary["max_ms"],
+                "p50_semantic_wait_ms": summary.get("p50_semantic_wait_ms", ""),
+                "p95_semantic_wait_ms": summary.get("p95_semantic_wait_ms", ""),
+                "p99_semantic_wait_ms": summary.get("p99_semantic_wait_ms", ""),
+                "p50_engine_compute_ms": summary.get("p50_engine_compute_ms", ""),
+                "p95_engine_compute_ms": summary.get("p95_engine_compute_ms", ""),
+                "p99_engine_compute_ms": summary.get("p99_engine_compute_ms", ""),
+                "p50_visibility_ms": summary.get("p50_visibility_ms", ""),
+                "p95_visibility_ms": summary.get("p95_visibility_ms", ""),
+                "p99_visibility_ms": summary.get("p99_visibility_ms", ""),
                 "p99_write_to_input_append_latency_ms": summary.get("p99_write_to_input_append_latency_ms", ""),
                 "p99_input_append_to_result_emission_latency_ms": summary.get("p99_input_append_to_result_emission_latency_ms", ""),
                 "p99_l_visibility_ms": summary.get("p99_l_visibility_ms", ""),
@@ -168,6 +177,14 @@ def aggregate_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
             else:
                 agg[f"mean_p99_{comp}_ms"] = ""
                 
+        for comp in ["semantic_wait", "engine_compute", "visibility"]:
+            for p in ["p50", "p95", "p99"]:
+                vals = [float(row[f"{p}_{comp}_ms"]) for row in group if row.get(f"{p}_{comp}_ms")]
+                if vals:
+                    agg[f"mean_{p}_{comp}_ms"] = round(sum(vals) / len(vals), 3)
+                else:
+                    agg[f"mean_{p}_{comp}_ms"] = "" 
+                
         aggregates.append(agg)
         
     # Calculate effect size (difference in medians compared to Flink as baseline)
@@ -198,12 +215,12 @@ def write_csv(rows: list[dict[str, object]], path: Path) -> None:
 def write_markdown(rows: list[dict[str, object]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        "| Engine | Workload ID | Workload | Run label | Rate | Produced | Expected | Matched | Passed | p50 ms | p95 ms | p99 ms | p99 write_to_input_append_latency | p99 input_append_to_result_emission_latency | p99 l_visibility | p99 l_closure |",
-        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Engine | Workload ID | Workload | Run label | Rate | Produced | Expected | Matched | Passed | p50 ms | p95 ms | p99 ms | p50 semantic_wait | p95 semantic_wait | p99 semantic_wait | p50 engine_compute | p95 engine_compute | p99 engine_compute | p50 visibility | p95 visibility | p99 visibility | p99 write_to_input_append_latency | p99 input_append_to_result_emission_latency | p99 l_visibility | p99 l_closure |",
+        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
         lines.append(
-            "| {engine} | {workload_id} | {workload} | {run_label} | {rate_per_sec} | {produced_records} | {expected_output_records} | {matched_records} | {passed} | {p50_ms} | {p95_ms} | {p99_ms} | {p99_write_to_input_append_latency_ms} | {p99_input_append_to_result_emission_latency_ms} | {p99_l_visibility_ms} | {p99_l_closure_ms} |".format(
+            "| {engine} | {workload_id} | {workload} | {run_label} | {rate_per_sec} | {produced_records} | {expected_output_records} | {matched_records} | {passed} | {p50_ms} | {p95_ms} | {p99_ms} | {p50_semantic_wait_ms} | {p95_semantic_wait_ms} | {p99_semantic_wait_ms} | {p50_engine_compute_ms} | {p95_engine_compute_ms} | {p99_engine_compute_ms} | {p50_visibility_ms} | {p95_visibility_ms} | {p99_visibility_ms} | {p99_write_to_input_append_latency_ms} | {p99_input_append_to_result_emission_latency_ms} | {p99_l_visibility_ms} | {p99_l_closure_ms} |".format(
                 **row
             )
         )
@@ -213,12 +230,12 @@ def write_markdown(rows: list[dict[str, object]], path: Path) -> None:
 def write_aggregate_markdown(rows: list[dict[str, object]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        "| Engine | Workload ID | Workload | Rate | Runs | All passed | p50 ms (95% CI) | Effect Size (ms) | p95 ms (95% CI) | p99 ms (95% CI) | Mean p99 write_to_input_append_latency | Mean p99 input_append_to_result_emission_latency | Mean p99 l_visibility | Mean p99 l_closure |",
-        "| --- | --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Engine | Workload ID | Workload | Rate | Runs | All passed | p50 ms (95% CI) | Effect Size (ms) | p95 ms (95% CI) | p99 ms (95% CI) | Mean p50 semantic_wait | Mean p95 semantic_wait | Mean p99 semantic_wait | Mean p50 engine_compute | Mean p95 engine_compute | Mean p99 engine_compute | Mean p50 visibility | Mean p95 visibility | Mean p99 visibility | Mean p99 write_to_input_append_latency | Mean p99 input_append_to_result_emission_latency | Mean p99 l_visibility | Mean p99 l_closure |",
+        "| --- | --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
         fmt_args = dict(row)
-        for k in ['mean_p99_write_to_input_append_latency_ms', 'mean_p99_input_append_to_result_emission_latency_ms', 'mean_p99_l_visibility_ms', 'mean_p99_l_closure_ms']:
+        for k in ['mean_p50_semantic_wait_ms', 'mean_p95_semantic_wait_ms', 'mean_p99_semantic_wait_ms', 'mean_p50_engine_compute_ms', 'mean_p95_engine_compute_ms', 'mean_p99_engine_compute_ms', 'mean_p50_visibility_ms', 'mean_p95_visibility_ms', 'mean_p99_visibility_ms', 'mean_p99_write_to_input_append_latency_ms', 'mean_p99_input_append_to_result_emission_latency_ms', 'mean_p99_l_visibility_ms', 'mean_p99_l_closure_ms']:
             if k not in fmt_args:
                 fmt_args[k] = ''
         
@@ -227,7 +244,7 @@ def write_aggregate_markdown(rows: list[dict[str, object]], path: Path) -> None:
         fmt_args["p99_str"] = f"{fmt_args['median_p99_ms']} ({fmt_args['p99_ci_low']}-{fmt_args['p99_ci_high']})"
         
         lines.append(
-            "| {engine} | {workload_id} | {workload} | {rate_per_sec} | {runs} | {all_passed} | {p50_str} | {effect_size_ms} | {p95_str} | {p99_str} | {mean_p99_write_to_input_append_latency_ms} | {mean_p99_input_append_to_result_emission_latency_ms} | {mean_p99_l_visibility_ms} | {mean_p99_l_closure_ms} |".format(
+            "| {engine} | {workload_id} | {workload} | {rate_per_sec} | {runs} | {all_passed} | {p50_str} | {effect_size_ms} | {p95_str} | {p99_str} | {mean_p50_semantic_wait_ms} | {mean_p95_semantic_wait_ms} | {mean_p99_semantic_wait_ms} | {mean_p50_engine_compute_ms} | {mean_p95_engine_compute_ms} | {mean_p99_engine_compute_ms} | {mean_p50_visibility_ms} | {mean_p95_visibility_ms} | {mean_p99_visibility_ms} | {mean_p99_write_to_input_append_latency_ms} | {mean_p99_input_append_to_result_emission_latency_ms} | {mean_p99_l_visibility_ms} | {mean_p99_l_closure_ms} |".format(
                 **fmt_args
             )
         )
