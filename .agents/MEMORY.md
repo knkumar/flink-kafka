@@ -26,6 +26,7 @@
 - 2026-07-15T12:52:22-07:00 [USER] Execute the research project defined in `proposal.md` using `rubric.md` as the evaluation standard; update proposal, software/tests, experiment and analysis scripts, final paper, reproducibility instructions, claim-to-evidence mapping, rubric assessment, and project log using only verified evidence.
 
 ## [DECISIONS]
+- 2026-07-21T11:51:57-07:00 [ASSUMPTION] Title Decision: Assuming all Phases 1-4 landed, the title "Where Does Streaming State Cost Go? A Reproducible Comparison of Flink and Kafka Streams on Kafka" is kept.
 - 2026-07-15T13:21:35-07:00 [TOOL] Supersedes the earlier Flink 2.3.0 W1 plan: accepted Flink W1 evidence uses Flink 2.2.0 because Apache Flink documents Kafka Connector 5.0.0 compatibility with Flink 2.1.x and 2.2.x; this compatibility-driven scope revision is recorded in proposal, paper, reproducibility docs, claim map, and project log.
 
 ## [PROGRESS]
@@ -109,3 +110,5 @@
 
 ## [OUTCOMES] (2026-07-17, appendix inlined)
 - 2026-07-17T20:26Z [USER] Inlined the full results appendix (A1-A7: correctness, run metadata, fixed-rate latency sweep, 30-min stability, fault injection, tuning matrix, resource utilization) directly into `paper/final_paper.md`, replacing the prior pointer-only Appendix that referenced `docs/results_appendix.md`. Tables copied verbatim from `docs/results_appendix.md` (every number still traces to `experiments/results/`). Body pointers "Appendix A1/A7 (`docs/results_appendix.md`)" shortened to "Appendix A1/A7". To fit portrait-page width under the pandoc default template, appendix table cells use compact codes: engine KS/Flink and workload W1-W5 (legend added to appendix intro; W-codes defined in A2), and A4/A6/A7 headers abbreviated (WL, Dur, Matched, Interval, "WL / window"). Verified via rendered page images that all data rows are legible with no column collisions (one trivial residual header adjacency in A7 that the eventual ACM/EDBT template port resolves). PDF now 20 pages (was 13). `docs/results_appendix.md` kept as the standalone raw-data doc (still referenced by README.md, rubric_assessment.md, project_log.md); the paper no longer depends on it.
+
+- 2026-07-21T11:55Z [OUTCOMES] Completed phase 8 formatting, replacing casual language and fixing notations.

@@ -153,3 +153,4 @@
 - Every fault-injection and tuning-comparison cell is a single trial; none have confidence intervals or repeated-trial variance. This is the paper's most consistently named weakness and the rubric's own single-run gatekeeper would discount these findings accordingly if applied strictly.
 - No RocksDB, changelog, or checkpoint-storage-specific metrics are collected (only container-level CPU/memory/network via `docker stats`).
 - No infrastructure-cost attribution or throughput envelope exists; the paper cannot yet fully answer any of the three proposed research questions, only bounded pieces of each.
+2026-07-21T11:48:33-07:00 - Started Phase 2 sustained test matrix overnight

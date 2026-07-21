@@ -3,6 +3,11 @@ set -euo pipefail
 
 echo "This script reproduces the EDBT failure recovery and tuning study tables natively."
 
+echo "0. Cleaning stale state (topics, checkpoints, volumes, offsets, application identities)..."
+docker compose -f experiments/flink_w1/docker-compose.yml down -v --remove-orphans || true
+docker compose -f experiments/kafka_streams_w1/docker-compose.yml down -v --remove-orphans || true
+docker run --rm -v "$(pwd)/experiments/flink_w1/checkpoints:/checkpoints" ubuntu:latest bash -c 'rm -rf /checkpoints/*' || true
+
 echo "1. Run all failure tests..."
 ./scripts/run-all-failure-tests.sh
 
