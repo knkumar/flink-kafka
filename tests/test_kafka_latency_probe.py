@@ -11,8 +11,10 @@ from stream_state_bench.kafka_latency_probe import (
     output_event_id,
     output_record_id_and_sources,
     percentile_nearest_rank,
+    percentile_nearest_rank,
     summarize_samples,
     write_latency_outputs,
+    compute_sample,
 )
 
 
@@ -127,6 +129,21 @@ class KafkaLatencyProbeTests(unittest.TestCase):
             "event_id,t0_ms,t1_ms,t2_ms,t3_ms,write_to_input_append_latency_ms,input_append_to_result_emission_latency_ms,l_visibility_ms,l_closure_ms,latency_ms",
         )
         self.assertEqual(len(csv_lines), 3)
+
+    def test_te_decomposition_splits_semantic_from_compute(self):
+        sample = compute_sample(
+            record_id="e-1",
+            expected_record={"source_ids": ("s-1",), "window_end_ms": None},
+            send_times={"s-1": 900 * 1_000_000},
+            t1_times={"s-1": 1000},
+            receive_ns=5800 * 1_000_000,
+            line='{"t_e_ms": 5000, "t2_ms": 5010}',
+            allowed_lateness_ms=0,
+        )
+        self.assertEqual(sample["semantic_wait_ms"], 4000.0)
+        self.assertEqual(sample["engine_compute_ms"], 10.0)
+        self.assertEqual(sample["visibility_ms"], 790.0)
+
 
 
 if __name__ == "__main__":

@@ -151,7 +151,14 @@ public final class FlinkIdentityJob {
                     .sinkTo(sink)
                     .name("kafka-sink");
         } else {
-            input.flatMap((String value, Collector<String> out) -> collect(workload, value, out))
+            input.process(new org.apache.flink.streaming.api.functions.ProcessFunction<String, String>() {
+                        @Override
+                        public void processElement(String value, Context ctx, Collector<String> out) {
+                            long wmMs = ctx.timerService().currentWatermark();
+                            long teMs = System.currentTimeMillis();
+                            collect(workload, value, out, wmMs, teMs);
+                        }
+                    })
                     .returns(String.class)
                     .sinkTo(sink)
                     .name("kafka-sink");
@@ -182,19 +189,19 @@ public final class FlinkIdentityJob {
     }
 
     static String toOutputJson(String eventLine) {
-        return toIdentityJson(eventLine);
+        return toIdentityJson(eventLine, 0, System.currentTimeMillis());
     }
 
-    static void collect(String workload, String eventLine, Collector<String> out) {
+    static void collect(String workload, String eventLine, Collector<String> out, long wmMs, long teMs) {
         if ("identity".equals(workload)) {
-            out.collect(toIdentityJson(eventLine));
+            out.collect(toIdentityJson(eventLine, wmMs, teMs));
             return;
         }
         if ("filter_map".equals(workload)) {
             String[] fields = parse(eventLine);
             int payload = Integer.parseInt(fields[2]);
             if (payload % 2 == 0) {
-                out.collect(toFilterMapJson(fields[0], Integer.parseInt(fields[1]), payload));
+                out.collect(toFilterMapJson(fields[0], Integer.parseInt(fields[1]), payload, wmMs, teMs));
             }
             return;
         }
@@ -205,7 +212,7 @@ public final class FlinkIdentityJob {
         return "tumbling_count".equals(workload) || "sliding_sum".equals(workload);
     }
 
-    private static String toTumblingCountJson(String keyText, long windowStart, long windowEnd, List<String> eventIds) {
+    private static String toTumblingCountJson(String keyText, long windowStart, long windowEnd, List<String> eventIds, long wmMs, long teMs) {
         Collections.sort(eventIds);
         int key = Integer.parseInt(keyText);
         return "{\"output_id\":\"tc-" + key + "-" + windowStart + "\","
@@ -213,11 +220,11 @@ public final class FlinkIdentityJob {
                 + "\"window_start_ms\":" + windowStart + ","
                 + "\"window_end_ms\":" + windowEnd + ","
                 + "\"value\":" + eventIds.size() + ","
-                + "\"t2_ms\":" + System.currentTimeMillis() + ","
+                + "\"t_e_ms\":" + teMs + ",\"wm_ms\":" + wmMs + ",\"t2_ms\":" + System.currentTimeMillis() + ","
                 + "\"source_event_ids\":" + toJsonStringArray(eventIds) + "}";
     }
 
-    private static String toSlidingSumJson(String keyText, long windowStart, long windowEnd, long sum, List<String> eventIds) {
+    private static String toSlidingSumJson(String keyText, long windowStart, long windowEnd, long sum, List<String> eventIds, long wmMs, long teMs) {
         Collections.sort(eventIds);
         int key = Integer.parseInt(keyText);
         return "{\"output_id\":\"ss-" + key + "-" + windowStart + "\","
@@ -225,11 +232,11 @@ public final class FlinkIdentityJob {
                 + "\"window_start_ms\":" + windowStart + ","
                 + "\"window_end_ms\":" + windowEnd + ","
                 + "\"value\":" + sum + ","
-                + "\"t2_ms\":" + System.currentTimeMillis() + ","
+                + "\"t_e_ms\":" + teMs + ",\"wm_ms\":" + wmMs + ",\"t2_ms\":" + System.currentTimeMillis() + ","
                 + "\"source_event_ids\":" + toJsonStringArray(eventIds) + "}";
     }
 
-    private static String toJoinJson(String leftLine, String rightLine) {
+    private static String toJoinJson(String leftLine, String rightLine, long wmMs, long teMs) {
         String[] left = parse(leftLine);
         String[] right = parse(rightLine);
         String leftId = left[0];
@@ -247,7 +254,7 @@ public final class FlinkIdentityJob {
                 + "\"window_start_ms\":" + windowStart + ","
                 + "\"window_end_ms\":" + windowEnd + ","
                 + "\"value\":" + value + ","
-                + "\"t2_ms\":" + System.currentTimeMillis() + ","
+                + "\"t_e_ms\":" + teMs + ",\"wm_ms\":" + wmMs + ",\"t2_ms\":" + System.currentTimeMillis() + ","
                 + "\"source_event_ids\":[\"" + escape(leftId) + "\",\"" + escape(rightId) + "\"]}";
     }
 
@@ -255,7 +262,7 @@ public final class FlinkIdentityJob {
         return "__tick__".equals(parse(eventLine)[0]);
     }
 
-    private static String toIdentityJson(String eventLine) {
+    private static String toIdentityJson(String eventLine, long wmMs, long teMs) {
         String[] fields = eventLine.split("\\t", -1);
         validate(fields);
         String eventId = fields[0];
@@ -266,17 +273,17 @@ public final class FlinkIdentityJob {
                 + "\"window_start_ms\":null,"
                 + "\"window_end_ms\":null,"
                 + "\"value\":" + payload + ","
-                + "\"t2_ms\":" + System.currentTimeMillis() + ","
+                + "\"t_e_ms\":" + teMs + ",\"wm_ms\":" + wmMs + ",\"t2_ms\":" + System.currentTimeMillis() + ","
                 + "\"source_event_ids\":[\"" + escape(eventId) + "\"]}";
     }
 
-    private static String toFilterMapJson(String eventId, int key, int payload) {
+    private static String toFilterMapJson(String eventId, int key, int payload, long wmMs, long teMs) {
         return "{\"output_id\":\"fm-" + escape(eventId) + "\","
                 + "\"key\":" + key + ","
                 + "\"window_start_ms\":null,"
                 + "\"window_end_ms\":null,"
                 + "\"value\":" + (payload * 2) + ","
-                + "\"t2_ms\":" + System.currentTimeMillis() + ","
+                + "\"t_e_ms\":" + teMs + ",\"wm_ms\":" + wmMs + ",\"t2_ms\":" + System.currentTimeMillis() + ","
                 + "\"source_event_ids\":[\"" + escape(eventId) + "\"]}";
     }
 
@@ -320,7 +327,9 @@ public final class FlinkIdentityJob {
             for (String line : input) {
                 eventIds.add(parse(line)[0]);
             }
-            out.collect(toTumblingCountJson(key, context.window().getStart(), context.window().getEnd(), eventIds));
+            long wmMs = context.currentWatermark();
+            long teMs = System.currentTimeMillis();
+            out.collect(toTumblingCountJson(key, context.window().getStart(), context.window().getEnd(), eventIds, wmMs, teMs));
         }
     }
 
@@ -334,14 +343,18 @@ public final class FlinkIdentityJob {
                 eventIds.add(fields[0]);
                 sum += Long.parseLong(fields[2]);
             }
-            out.collect(toSlidingSumJson(key, context.window().getStart(), context.window().getEnd(), sum, eventIds));
+            long wmMs = context.currentWatermark();
+            long teMs = System.currentTimeMillis();
+            out.collect(toSlidingSumJson(key, context.window().getStart(), context.window().getEnd(), sum, eventIds, wmMs, teMs));
         }
     }
 
     private static final class JoinFunction extends ProcessJoinFunction<String, String, String> {
         @Override
         public void processElement(String left, String right, Context context, Collector<String> out) {
-            out.collect(toJoinJson(left, right));
+            long wmMs = context.getTimestamp();
+            long teMs = System.currentTimeMillis();
+            out.collect(toJoinJson(left, right, wmMs, teMs));
         }
     }
 }
