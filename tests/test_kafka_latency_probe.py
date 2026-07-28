@@ -126,7 +126,7 @@ class KafkaLatencyProbeTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["measurement"], "host_write_to_read_committed_visibility_delay_proxy")
         self.assertEqual(
             csv_lines[0],
-            "event_id,t0_ms,t1_ms,t2_ms,t3_ms,write_to_input_append_latency_ms,input_append_to_result_emission_latency_ms,l_visibility_ms,l_closure_ms,latency_ms",
+            "event_id,t0_ms,t1_ms,t_e_ms,wm_ms,t2_ms,t3_ms,write_to_input_append_latency_ms,semantic_wait_ms,engine_compute_ms,visibility_ms,input_append_to_result_emission_latency_ms,l_visibility_ms,l_closure_ms,latency_ms",
         )
         self.assertEqual(len(csv_lines), 3)
 
