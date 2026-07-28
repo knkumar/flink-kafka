@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "$0")/lib/workload-ids.sh"
+
 ENGINES=("kafka-streams" "flink")
 WORKLOADS=("w1" "w3")
 PARTITIONS_LIST=(5)
@@ -57,15 +59,12 @@ for combo in "${shuffled[@]}"; do
     
     export RUN_LABEL="skew${skew}_par${par}_part${p}"
     
+    export WORKLOAD_ID="${workload}_latency"
+    export WORKLOAD="$(workload_name_for_id "$workload")"
+
     if [ "$engine" == "kafka-streams" ]; then
-        export WORKLOAD_ID="${workload}_latency"
-        if [ "$workload" == "w1" ]; then export WORKLOAD="identity"; fi
-        if [ "$workload" == "w3" ]; then export WORKLOAD="tumbling_count"; fi
         ./scripts/run-kafka-streams-w1-latency.sh || echo "Run failed but continuing sweep..."
     else
-        export WORKLOAD_ID="${workload}_latency"
-        if [ "$workload" == "w1" ]; then export WORKLOAD="identity"; fi
-        if [ "$workload" == "w3" ]; then export WORKLOAD="tumbling_count"; fi
         ./scripts/run-flink-w1-latency.sh || echo "Run failed but continuing sweep..."
     fi
     

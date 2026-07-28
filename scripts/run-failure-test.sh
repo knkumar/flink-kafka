@@ -7,17 +7,12 @@ FAILURE_MODE="${3:-jvm_kill}"
 RATE_PER_SEC="${4:-20}"
 EVENTS="${5:-2000}"
 
+source "$(dirname "$0")/lib/workload-ids.sh"
+
 # 100 seconds total, inject at 50 seconds
 INJECT_DELAY=$(( (EVENTS / RATE_PER_SEC) / 2 ))
 
-local_workload_name="identity"
-case "$WORKLOAD" in
-    w1) local_workload_name="identity" ;;
-    w2) local_workload_name="filter_map" ;;
-    w3) local_workload_name="tumbling_count" ;;
-    w4) local_workload_name="sliding_sum" ;;
-    w5) local_workload_name="stream_stream_join" ;;
-esac
+local_workload_name="$(workload_name_for_id "$WORKLOAD")"
 
 echo "Starting failure test ($FAILURE_MODE) for $ENGINE $WORKLOAD at $RATE_PER_SEC/sec for $EVENTS events..."
 
