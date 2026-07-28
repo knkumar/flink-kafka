@@ -89,13 +89,13 @@ w1-latency-sweep:
 	./scripts/run-w1-latency-sweep.sh
 
 w2-latency-sweep:
-	./scripts/run-w2-latency-sweep.sh
+	WORKLOAD=filter_map WORKLOAD_ID=w2_latency ./scripts/run-w1-latency-sweep.sh
 
 w3-latency-sweep:
-	./scripts/run-w3-latency-sweep.sh
+	WORKLOAD=tumbling_count WORKLOAD_ID=w3_latency ./scripts/run-w1-latency-sweep.sh
 
 w4-latency-sweep:
-	./scripts/run-w4-latency-sweep.sh
+	WORKLOAD=sliding_sum WORKLOAD_ID=w4_latency START_MS=600000 ./scripts/run-w1-latency-sweep.sh
 
 w5-latency-sweep:
-	./scripts/run-w5-latency-sweep.sh
+	WORKLOAD=stream_stream_join WORKLOAD_ID=w5_latency START_MS=1000 ./scripts/run-w1-latency-sweep.sh

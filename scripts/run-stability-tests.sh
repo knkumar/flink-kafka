@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "$0")/lib/workload-ids.sh"
+
 RATE_PER_SEC="${RATE_PER_SEC:-100}"
 DURATION_SEC="${DURATION_SEC:-120}"
 EVENTS=$(( RATE_PER_SEC * DURATION_SEC ))
@@ -16,15 +18,18 @@ run_stability() {
     local run_label="${RUN_LABEL:-stability_${RATE_PER_SEC}${trial_suffix}}"
     local script="scripts/run-${engine}-w1-latency.sh"
     
+    case "$workload" in
+        w1|w2|w3|w4|w5) : ;;
+        *) echo "Unknown workload: $workload"; exit 1 ;;
+    esac
+    local workload_name
+    workload_name="$(workload_name_for_id "$workload")"
+
     local start_ms=0
     local keys=100
     case "$workload" in
-        w1) workload_name="identity" ;;
-        w2) workload_name="filter_map" ;;
-        w3) workload_name="tumbling_count" ;;
-        w4) workload_name="sliding_sum"; start_ms=600000 ;;
-        w5) workload_name="stream_stream_join"; start_ms=1000; keys=100000 ;;
-        *) echo "Unknown workload: $workload"; exit 1 ;;
+        w4) start_ms=600000 ;;
+        w5) start_ms=1000; keys=100000 ;;
     esac
     
     local group_id

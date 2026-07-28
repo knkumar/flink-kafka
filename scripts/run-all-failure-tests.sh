@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "$0")/lib/workload-ids.sh"
+
 ENGINES=("kafka-streams" "flink")
 WORKLOADS=("w1" "w3" "w4")
 FAILURES=("jvm_kill" "broker_kill" "node_loss" "kraft_failover" "s3_throttling" "changelog_restore")
@@ -29,14 +31,7 @@ for combo in "${shuffled[@]}"; do
     failure=$(echo "$combo" | awk "{print \$3}")
     trial=$(echo "$combo" | awk "{print \$4}")
     
-    local_workload_name="identity"
-    case "$workload" in
-        w1) local_workload_name="identity" ;;
-        w2) local_workload_name="filter_map" ;;
-        w3) local_workload_name="tumbling_count" ;;
-        w4) local_workload_name="sliding_sum" ;;
-        w5) local_workload_name="stream_stream_join" ;;
-    esac
+    local_workload_name="$(workload_name_for_id "$workload")"
     engine_name="${engine//-/_}"
     RESULT_DIR="experiments/results/${engine_name}_${local_workload_name}_latency_failure_${failure}_trial${trial}"
     if [[ -f "$RESULT_DIR/verification.json" ]]; then

@@ -30,7 +30,8 @@ To run the benchmark, you'll need:
 - **`src/stream_state_bench/`**: Core workload definitions, verification logic, experiment runner, and analyzer.
 - **`experiments/`**: Docker Compose workflows and configuration for Kafka Streams and Flink. This is also where benchmark results are generated (`experiments/results/`).
 - **`tests/`**: Unit tests for workload and verifier behavior.
-- **`docs/`** & **`paper/`**: Project documentation, logs, rubric assessments, and the final paper draft.
+- **`paper/`**: The final paper draft (tracked).
+- **`docs/`**: Local, untracked working notes (logs, rubric assessments, evidence maps) generated while producing the paper. Not part of a fresh clone.
 
 ---
 
@@ -101,9 +102,6 @@ This will output `experiments/results/engine_correctness_summary.csv` and `.md`.
 
 ## 📚 Documentation & Status
 
-- **`paper/final_paper.md`**: Evidence-limited paper draft with full results and their scope.
-- **`docs/results_appendix.md`**: Exhaustive per-run tables.
-- **`docs/claim_evidence_map.md`**: Claim-by-claim pointer to the exact evidence file.
-- **`docs/rubric_assessment.md`**: Self-assessment against `rubric.md`.
-- **`docs/project_log.md`**: Chronological record of what was run, in what order, and what failed.
-- **`docs/reproducibility.md`**: Commands and artifact scope.
+- **`paper/final_paper.md`**: Evidence-limited paper draft with full results and their scope. Tracked in git.
+
+`docs/` is untracked (see `.gitignore`) and holds local working notes built up while producing the paper: `results_appendix.md` (exhaustive per-run tables), `claim_evidence_map.md` (claim-by-claim pointer to evidence), `rubric_assessment.md` (self-assessment against the review rubric), `project_log.md` (chronological run log), and `reproducibility.md` (commands and artifact scope). Regenerate or consult it locally; it won't be present in a fresh clone.

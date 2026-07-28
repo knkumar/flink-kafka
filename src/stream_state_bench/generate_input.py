@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .cli_utils import parse_scale
 from .events import Event, paired_join_events, uniform_events
 from .reference import WORKLOADS, reference_outputs
 
@@ -63,16 +64,6 @@ def write_inputs(
 
 def write_identity_inputs(*, events: int, keys: int, seed: int, input_tsv: Path, expected_jsonl: Path, skew: bool = False) -> None:
     write_inputs(workload="identity", events=events, keys=keys, seed=seed, input_tsv=input_tsv, expected_jsonl=expected_jsonl, skew=skew)
-
-def parse_scale(value: str) -> int:
-    v = value.lower()
-    if v.endswith("k"):
-        return int(float(v[:-1]) * 1000)
-    elif v.endswith("m"):
-        return int(float(v[:-1]) * 1000000)
-    elif v.endswith("b"):
-        return int(float(v[:-1]) * 1000000000)
-    return int(v)
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate deterministic benchmark input files.")
