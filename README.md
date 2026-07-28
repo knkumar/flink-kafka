@@ -103,5 +103,3 @@ This will output `experiments/results/engine_correctness_summary.csv` and `.md`.
 ## 📚 Documentation & Status
 
 - **`paper/final_paper.md`**: Evidence-limited paper draft with full results and their scope. Tracked in git.
-
-`docs/` is untracked (see `.gitignore`) and holds local working notes built up while producing the paper: `results_appendix.md` (exhaustive per-run tables), `claim_evidence_map.md` (claim-by-claim pointer to evidence), `rubric_assessment.md` (self-assessment against the review rubric), `project_log.md` (chronological run log), and `reproducibility.md` (commands and artifact scope). Regenerate or consult it locally; it won't be present in a fresh clone.
