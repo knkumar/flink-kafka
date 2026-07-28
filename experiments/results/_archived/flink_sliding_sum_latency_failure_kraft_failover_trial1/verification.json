@@ -1,0 +1,16 @@
+{
+  "workload": "sliding_sum",
+  "actual_jsonl": "experiments/results/flink_sliding_sum_latency_failure_kraft_failover_trial1/actual.jsonl",
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "verification": {
+    "expected_count": 1286,
+    "actual_count": 1286,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}

@@ -1,37 +1,102 @@
-\hypertarget{where-does-streaming-state-cost-go-a-reproducible-comparison-of-flink-and-kafka-streams-on-kraft-kafka}{%
-\section{Where Does Streaming State Cost Go? A Reproducible Comparison
-of Flink and Kafka Streams on KRaft
-Kafka}\label{where-does-streaming-state-cost-go-a-reproducible-comparison-of-flink-and-kafka-streams-on-kraft-kafka}}
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\title{Where Does Streaming State Cost Go? A Reproducible Comparison of Flink and Kafka Streams on Kafka}
+\author{Kiran N Kumar \\ knkumar@iu.edu \and Santosh K Saminathan \\ s13.santosh@gmail.com}
+\begin{document}
+\maketitle
+
+
 
 Draft checked against repository state as of
-\texttt{2026-07-17T08:15:03-07:00}.
+\texttt{2026-07-21T09:26:07-07:00}.
 
-\hypertarget{abstract}{%
-\subsection{Abstract}\label{abstract}}
-
+\begin{abstract}
 Flink and Kafka Streams both keep local state in RocksDB and both offer
-exactly-once processing over Kafka, but they place the cost of
-durability in different parts of the system: Flink coordinates
-asynchronous barrier-based checkpoints from a JobManager, while Kafka
-Streams replicates state changes to broker-held changelog topics and
-recovers by replaying them. Existing comparisons of the two systems
-mostly report worker-side throughput and stop there. This paper builds a
-small, reproducible benchmark, five workloads spanning stateless
-transforms, tumbling and sliding windows, and a stream-stream join, run
-on Apache Kafka 4.3.1 (KRaft mode), Kafka Streams 4.3.1, and Flink
-2.2.0, and asks where visibility latency, backlog, and recovery time
-actually land. Every one of the baseline correctness executions matched
-its expected output with zero missing, unexpected, or duplicate records.
-Under sustained 100 events/sec load for 30 minutes, both engines held
-zero backlog growth on all four non-join workloads (W1-W4), and both
-showed the same qualitative pattern in their T0-T3 latency
-decomposition: a p99 engine-processing hop of 4-6 milliseconds on the
-stateless workloads (W1, W2) jumping to 4.3-6.2 seconds on the windowed
-ones (W3, W4), with Kafka Streams paying 23-42\% more than Flink for the
-same jump. A matched tuning comparison on both engines shows this cost
-is real and configuration-sensitive, but gated through mechanically
-different parts of each engine. Fault injection (JVM kill, broker kill,
-and node loss) shows the two architectures fail differently.
+exactly-once processing over Kafka, but they place durability in
+different system components: Flink coordinates asynchronous checkpoints
+from a JobManager, while Kafka Streams replicates state changes to
+broker-held changelog topics. This paper builds a benchmark with five
+workloads spanning stateless transforms, tumbling and sliding windows,
+and a stream-stream join, run on Apache Kafka 4.3.1 (KRaft mode), Kafka
+Streams 4.3.1, and Flink 2.2.0. It reports fixed-load visibility-delay
+measurements, worker and broker container samples, configuration
+sensitivity, and fault-injection outcomes on one shared host. Fifty
+independent correctness trials, five per engine/workload combination,
+matched their expected output with zero missing, unexpected, or
+duplicate records. Under 100 events/sec load for 30 minutes, the
+combined 	exttt{T2-T1} hop ranges from 4-6 milliseconds for W1-W2 to
+4.3-6.2 seconds for W3-W4; it includes both event-time waiting and
+engine work, because the harness does not yet record semantic
+eligibility 	exttt{T\_e}. A sustained W3 tuning study contains three
+valid trials for each engine and interval, each with 6,000 inputs and
+997 matched outputs. Fault injection shows that several Kafka Streams
+stateful trials did not finish within the observation window while the
+corresponding Flink trials completed, but the artifact does not directly
+measure recovery milestones or prove permanent data loss.
+\end{abstract}
 
 \hypertarget{introduction}{%
 \subsection{1. Introduction}\label{introduction}}
@@ -129,27 +194,26 @@ measurements, not a new query suite or a survey of the field.
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{RQ1, performance and correctness envelope.} Under open-loop
-  load, at what input rate does each system hold bounded p99 downstream
-  visibility delay and externally visible exactly-once correctness
-  across stateless, windowed, and join workloads?
+  \textbf{RQ1, fixed-load latency and correctness.} At 100 events/sec on
+  the documented shared host, how do downstream visibility delay, lag
+  observations, and externally visible correctness differ across
+  stateless and windowed workloads?
 \item
-  \textbf{RQ2, infrastructure cost distribution.} How is overhead
-  distributed across Kafka brokers, changelog and repartition topics,
-  Flink checkpoint storage, network traffic, and processing workers
-  under equivalent correctness guarantees?
+  \textbf{RQ2, preliminary container resource observations.} What worker
+  and broker CPU, memory, network-I/O, and block-I/O observations does
+  the harness record under the evaluated load?
 \item
   \textbf{RQ3, recovery and reprocessing behavior.} How do checkpoint or
   commit cadence and local-state loss affect recovery time, backlog
   drain, duplicate records, and downstream visibility delay?
 \end{enumerate}
 
-This paper answers a bounded piece of each question. RQ1 has correctness
-evidence across all five workloads twice (a baseline and one repeat),
-and a fixed-rate and sustained-load latency picture (Section 5.2, 5.3).
-RQ2 includes resource utilization metrics collected under load (Section
-5.4). RQ3 features a fault-injection sweep across the stateless identity
-workload (Section 5.6).
+This paper does not estimate a saturation boundary, total-system cost
+distribution, or recovery time. RQ1 has five independent correctness
+trials for each engine/workload combination and a fixed-rate latency
+picture for W1-W4. RQ2 reports container samples, not normalized
+infrastructure cost. RQ3 reports post-injection output observations and
+final verification within a bounded observation window.
 
 \hypertarget{methodology}{%
 \subsection{4. Methodology}\label{methodology}}
@@ -175,18 +239,18 @@ checked by output order alone.
 \subsubsection{4.2 Measurement harness}\label{measurement-harness}}
 
 Every input record carries a deterministic ID. A load-generation process
-writes it to Kafka and records \texttt{T0} (host time at write). Kafka's
-own \texttt{LogAppendTime} on the input topic gives \texttt{T1} (broker
-ingestion). The engine (Kafka Streams or Flink) stamps a wall-clock
-timestamp into the output payload immediately after its business logic
-runs, giving \texttt{T2} (engine output, pre-commit). A
-\texttt{read\_committed} consumer process records host time when it
-observes the committed output, giving \texttt{T3} (downstream
-visibility). \texttt{T1-T0}, \texttt{T2-T1}, and \texttt{T3-T2}
-decompose total visibility delay into a broker-ingestion hop, an
-engine-processing hop, and a commit-plus-consume hop. This decomposition
-is what makes Section 6's discussion possible: without it, a slow total
-latency number cannot be attributed to a specific part of the pipeline.
+records \texttt{T0} immediately before writing it to Kafka. Kafka's
+\texttt{LogAppendTime} on the input topic gives \texttt{T1} (broker
+ingestion). The engine stamps a wall-clock timestamp into the output
+payload immediately after its business logic runs, giving \texttt{T2}
+(engine output, pre-commit). A \texttt{read\_committed} consumer records
+\texttt{T3} when it observes the committed output. The harness reports
+\texttt{T1-T0}, \texttt{T2-T1}, and \texttt{T3-T2}. For W3 and W4,
+\texttt{T2-T1} combines semantic event-time waiting, triggering, and
+engine computation. It is not an engine-only processing metric because
+no watermark or stream-time eligibility timestamp (\texttt{T\_e}) is
+recorded. The results therefore describe a measured combined hop, not a
+causal decomposition of engine work.
 
 Both engines run against the same \texttt{apache/kafka:4.3.1} broker
 brought up in KRaft mode following the Apache Kafka quickstart {[}6{]},
@@ -196,24 +260,20 @@ Kafka sink), and are verified by the same external JSONL verifier. Flink
 2.2.0 with \texttt{flink-connector-kafka} 5.0.0-2.2 {[}8{]} replaced an
 originally proposed Flink 2.3.x target after Apache Flink's downloads
 page {[}7{]} showed 5.0.0 as compatible with Flink 2.1.x and 2.2.x, not
-2.3.x; this is a connector-compatibility correction, not a result-driven
-substitution, and is recorded here and in \texttt{docs/project\_log.md}.
-All experiments were run on a single dedicated machine sharing one
-Docker daemon, physical CPU, and disk.
+2.3.x. All experiments share one host, Docker daemon, physical CPU, and
+disk; the current artifact does not establish dedicated-host isolation
+or matched resource limits.
 
 \hypertarget{what-has-and-has-not-been-run}{%
 \subsubsection{4.3 What has and has not been
 run}\label{what-has-and-has-not-been-run}}
 
-The original proposal (\texttt{proposal.md}, Section 4.3-4.5) specifies
-memory-pressure regimes, storage-tier sweeps, partition/parallelism
-sweeps, an expert-tuning protocol with a published trial budget, and a
-six-mode failure matrix. The current artifact has executed correctness
-across all five workloads twice (a baseline and one repeat); fixed-rate
-latency; a 30-minute sustained-load stability check at 100 events/sec;
-resource-utilization sampling; a matched tuning comparison (varying the
-commit/checkpoint interval); and a fault-injection sweep (JVM kill,
-broker kill, node loss) across the stateless \texttt{W1} workload.
+The artifact includes a randomized five-trial correctness runner, a
+fixed-rate latency runner, a 30-minute 100 events/sec stability runner,
+container resource sampling, a three-trial-per-cell W3 tuning runner,
+and a five-trial fault-injection runner. Saturation, partition,
+parallelism, and state-size sweep scripts exist, but their result
+matrices are incomplete and are not used for claims in this paper.
 
 \hypertarget{results}{%
 \subsection{5. Results}\label{results}}
@@ -221,15 +281,16 @@ broker kill, node loss) across the stateless \texttt{W1} workload.
 \hypertarget{correctness}{%
 \subsubsection{5.1 Correctness}\label{correctness}}
 
-Both engines processed all five workloads twice (a baseline run and an
-independent \texttt{repeat1} run) against the shared deterministic
-input. All 20 runs matched their expected output exactly: zero missing,
-zero unexpected, and zero duplicate records in every case, across output
-counts ranging from 199 (\texttt{W3}) to 11,024 (\texttt{W5}). The
-supplementary material has the full table. This establishes that both
-engines implement the intended workload semantics under
-\texttt{read\_committed} exactly-once delivery before any latency or
-failure claim is asked to mean anything.
+Five independently ordered correctness trials per engine/workload
+combination passed against the shared deterministic input. All 50 runs
+matched their expected outputs exactly: zero missing, zero unexpected,
+and zero duplicate records, across output counts ranging from 199
+(\texttt{W3}) to 11,024 (\texttt{W5}). The earlier baseline and
+\texttt{repeat1} runs are retained in the artifact but are not the basis
+for this count. This establishes only finite-input functional
+correctness under \texttt{read\_committed} delivery; it does not
+establish correctness near saturation or after an unbounded recovery
+period.
 
 \hypertarget{latency-under-light-fixed-rate-load}{%
 \subsubsection{5.2 Latency under light, fixed-rate
@@ -239,24 +300,16 @@ At 20 records/sec with 100 input records, both engines pass every
 workload's correctness check while p99 end-to-end visibility delay
 ranges from about 2.6 seconds (\texttt{W1}, both engines) up to about
 7.1 seconds (Kafka Streams \texttt{W4}) and 5.8 seconds (Flink
-\texttt{W4}). Kafka Streams and Flink each ran a 10/20/40 records/sec
-sweep plus a second 20/sec run; full numbers are in the supplementary
-material. Two things stand out even at this small scale. First, the
-windowed workloads (\texttt{W3}, \texttt{W4}) carry roughly two to three
-times the p99 of the stateless ones (\texttt{W1}, \texttt{W2}) for both
-engines, consistent with final-window suppression holding output until
-the window closes rather than emitting continuously. Second, the rate
-direction is inconsistent for the windowed workloads: p99 falls from
-10/sec to 40/sec for both engines on \texttt{W3} and \texttt{W4} (for
-example, Kafka Streams \texttt{W3} p99 goes from 11,631 ms at 10/sec to
-3,943 ms at 40/sec). At 100 total input records, a higher production
-rate means the fixed-size input finishes sooner relative to the window
-boundaries the generator places it against, so this is very likely a
-small-sample artifact of how few windows a 100-record run touches, not a
-real property of the engines. Section 5.3's 100 events/sec, 30-minute
-runs (18,000 times more events) are the more trustworthy source for
-windowed-workload latency, and are read against this section for exactly
-that reason.
+\texttt{W4}). Kafka Streams and Flink each ran a bounded 10/20/40
+records/sec sweep plus a second 20/sec run. The windowed workloads
+(\texttt{W3}, \texttt{W4}) carry roughly two to three times the p99 of
+the stateless workloads. The rate direction is inconsistent for the
+windowed workloads: Kafka Streams \texttt{W3} falls from 11,631 ms at
+10/sec to 3,943 ms at 40/sec.~With only 100 inputs, production duration
+changes the position of the final tick relative to window boundaries;
+this is a finite-input artifact, not an estimate of sustainable
+throughput. Section 5.3 uses 1,800 times as many input records and is
+the stronger fixed-load evidence.
 
 \hypertarget{stability-and-latency-decomposition-under-sustained-load}{%
 \subsubsection{5.3 Stability and latency decomposition under sustained
@@ -271,13 +324,17 @@ all eight passed correctness verification exactly (180,000, 89,906,
 unexpected, or duplicate in every case). The decomposed p99 latency is
 where the two engines, and the four workloads, separate:
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1364}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1364}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}@{}}
+\begin{table*}[tbh]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}[]{@{}
+  >{\raggedright\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1364}}
+  >{\raggedright\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1364}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1818}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1818}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1818}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1818}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Engine
@@ -293,9 +350,8 @@ p99 t2-t1 (processing)
 p99 t3-t2 (commit + consume)
 \end{minipage} \\
 \midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
+
+
 Kafka Streams & W1 identity & 1967.4 ms & 1000.7 ms & 6.0 ms & 1008.6
 ms \\
 Kafka Streams & W2 filter\_map & 1928.3 ms & 1000.5 ms & 5.0 ms & 1009.3
@@ -310,21 +366,21 @@ Flink & W3 tumbling\_count & 5506.7 ms & 991.7 ms & 4287.0 ms & 968.6
 ms \\
 Flink & W4 sliding\_sum & 5751.4 ms & 1000.4 ms & 5080.0 ms & 994.9
 ms \\
-\end{longtable}
+\bottomrule\noalign{}
+\end{tabular}
+\end{table*}
 
-The ingestion hop (\texttt{t1-t0}) is nearly identical across both
-engines and all four workloads, around 1 second, consistent with a fixed
-producer-side pacing cost rather than anything engine- or
-workload-specific. The processing hop (\texttt{t2-t1}) is what moves,
-and it moves the same way for both engines: 4 to 6 milliseconds for the
-two stateless workloads, then a jump to 4.3-6.2 seconds for the two
-windowed ones, roughly a thousandfold increase in both cases. This is
-not a Kafka-Streams-specific property; both engines pay a real,
-multi-second cost to hold a windowed aggregation open and emit only its
-final result, and Kafka Streams pays 23-42\% more than Flink for it
-(6083 ms vs 4287 ms on \texttt{W3}, 6249 ms vs 5080 ms on \texttt{W4}).
-Section 6 traces this to a specific mechanism in each engine rather than
-leaving it as a correlation.
+The ingestion hop (\texttt{T1-T0}) is nearly identical across both
+engines and all four workloads, around one second. That behavior is
+consistent with producer-side pacing, but the harness does not isolate
+producer batching from broker work. The combined \texttt{T2-T1} hop is
+4-6 milliseconds for W1-W2 and 4.3-6.2 seconds for W3-W4. It includes
+the time that final-only window output waits for event-time progress, so
+it does not show that Kafka Streams spends 23-42\% more engine
+computation than Flink. It shows only that the combined hop is larger in
+these single 30-minute runs. A \texttt{T\_e} implementation and
+repeated, blocked stability trials are required before making a
+processing-cost comparison.
 
 Getting to this table required fixing two bugs specific to the Flink
 side, documented in full in \texttt{docs/project\_log.md} (2026-07-17):
@@ -345,35 +401,39 @@ explains why and what was run instead.
 \subsubsection{5.4 Resource utilization}\label{resource-utilization}}
 
 A \texttt{docker\ stats} sampler
-(\texttt{src/stream\_state\_bench/resource\_monitor.py}) polls CPU,
-memory, and network I/O for the engine and broker containers at a fixed
-interval. Kafka Streams' worker memory rises with workload state, from a
-mean 117.5 MiB on stateless \texttt{W1} to 157.0 MiB on stateful
-\texttt{W4}. Flink's worker sits at a blended mean of 377.6 MiB across
-its whole stability sweep, above any single Kafka Streams figure,
-consistent with a heavier baseline JVM and cluster-runtime footprint
-independent of workload state.
+(\texttt{src/stream\_state\_bench/resource\_monitor.py}) records CPU
+percentage, memory, cumulative network I/O, and cumulative block I/O for
+the engine and broker containers. The collected CSV files cover Kafka
+Streams W1-W4 and Flink's stability sweep. Kafka Streams' worker memory
+rises from a mean 117.5 MiB on W1 to 157.0 MiB on W4. Flink's worker has
+a blended mean of 377.6 MiB across its stability sweep. These are
+shared-host container observations, not normalized CPU-seconds,
+disk-throughput measurements, checkpoint-storage accounting, or
+total-system cost.
 
 \hypertarget{configuration-sensitivity}{%
 \subsubsection{5.5 Configuration
 sensitivity}\label{configuration-sensitivity}}
 
-Both engines hardcoded their commit or checkpoint interval at 1,000 ms
-in the original artifact; both are now configurable
-(\texttt{COMMIT\_INTERVAL\_MS} for Kafka Streams,
-\texttt{CHECKPOINT\_INTERVAL\_MS} for Flink) so a second configuration
-can be run and compared rather than asserting the default is
-representative. Both comparisons use \texttt{W3} tumbling\_count at the
-same scale as Section 5.2 (100 input records plus one tick, 20
-records/sec), varying only the interval:
+Both engines expose their commit or checkpoint interval through
+\texttt{COMMIT\_INTERVAL\_MS} and \texttt{CHECKPOINT\_INTERVAL\_MS}. The
+tuning study uses W3 at 100 inputs/sec for 60 seconds (6,000 inputs plus
+one tick). Each of the 12 trials produced and verified 997 final-window
+outputs. The table reports the median of three per-run nearest-rank p99
+values for each engine/interval cell; its component values are not
+additive p99 decompositions.
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1304}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1739}}@{}}
+\begin{table*}[tbh]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}[]{@{}
+  >{\raggedright\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1304}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1739}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1739}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1739}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1739}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 10\tabcolsep) * \real{0.1739}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Engine
@@ -389,190 +449,137 @@ p99 t2-t1 (processing)
 p99 t3-t2 (commit)
 \end{minipage} \\
 \midrule\noalign{}
-\endhead
+
+
+flink & 1000 ms & 5596.7 ms & 1002.0 ms & 4259.0 ms & 732.1 ms \\
+flink & 10000 ms & 12643.2 ms & 1001.8 ms & 4240.0 ms & 8702.2 ms \\
+kafka\_streams & 1000 ms & 6767.1 ms & 1001.8 ms & 6085.0 ms & 93.7
+ms \\
+kafka\_streams & 10000 ms & 23908.1 ms & 1001.4 ms & 23155.0 ms & 137.2
+ms \\
 \bottomrule\noalign{}
-\endlastfoot
-Kafka Streams & 1,000 ms (control) & 6,230.0 ms & 2,469.9 ms & 3,715.0
-ms & 60.1 ms \\
-Kafka Streams & 10,000 ms & 25,095.5 ms & 2,439.7 ms & 22,616.0 ms &
-57.5 ms \\
-Flink & 1,000 ms (control) & 5,442.5 ms & 2,539.6 ms & 2,655.0 ms &
-271.8 ms \\
-Flink & 10,000 ms & 8,142.2 ms & 2,486.7 ms & 2,728.0 ms & 2,954.5 ms \\
-\end{longtable}
+\end{tabular}
+\end{table*}
 
-Both engines matched 71/71 expected records with zero missing,
-unexpected, or duplicate records in all four runs. Raising the interval
-10x moves a different hop in each engine. Kafka Streams' processing hop
-(\texttt{t2-t1}) rises 6.1x (3,715 to 22,616 ms) while its commit hop
-stays flat; Flink's processing hop barely moves (2,655 to 2,728 ms,
-1.03x) while its commit hop (\texttt{t3-t2}) rises 10.9x (272 to 2,954
-ms). Section 6 explains why the same configuration knob lands on
-opposite sides of the T0-T3 decomposition in the two engines.
+All 12 trials matched 997/997 expected outputs with zero missing,
+unexpected, or duplicate records. The median per-run p99 \texttt{T2-T1}
+rises from 6,085 to 23,155 ms for Kafka Streams when the interval
+changes from 1,000 to 10,000 ms, while the corresponding \texttt{T3-T2}
+median changes from 93.7 to 137.2 ms. For Flink, the median per-run p99
+\texttt{T2-T1} remains near 4.25 seconds and \texttt{T3-T2} rises from
+732.1 to 8,702.2 ms. These observations are compatible with different
+timing paths, but \texttt{T2-T1} still includes semantic waiting and the
+experiment does not independently vary Kafka Streams cache settings. The
+study supports configuration sensitivity, not a complete causal
+explanation.
 
-\hypertarget{failure-recovery}{%
-\subsubsection{5.6 Failure recovery}\label{failure-recovery}}
+\hypertarget{post-injection-output-observations}{%
+\subsubsection{5.6 Post-injection output
+observations}\label{post-injection-output-observations}}
 
-\texttt{scripts/run-failure-test.sh} injects three failure modes across
-the stateless (\texttt{W1}) workload. The modes include
-\texttt{jvm\_kill}, \texttt{broker\_kill}, and \texttt{node\_loss}
-(removing anonymous volumes). Every run matched all expected output
-records with zero missing, unexpected, or duplicate records, ensuring no
-failure caused an externally visible correctness violation, only a
-latency spike.
+\texttt{scripts/run-failure-test.sh} injects JVM kill, broker kill, and
+container recreation after local-state loss into W1, W3, and W4. The
+runner also contains KRaft, pause, and changelog-removal scenarios, but
+those are engine-specific or incomplete and are not used for the
+comparative table. \texttt{jvm\_kill} is a process kill, not an OOM
+experiment. \texttt{node\_loss} in the archived result names means
+container and local-volume loss, not removal of a physical host node.
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1364}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1364}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}@{}}
+On W1, all reported trials matched their expected output. For W3 and W4,
+several Kafka Streams JVM-kill and container/local-volume-loss trials
+did not complete within the runner's observation window; those are
+censored harness outcomes, not evidence of permanent data loss. The
+corresponding reported Flink trials completed and passed final output
+verification. The harness records output timestamps and final
+verification, but not failure time, task assignment, restore
+start/completion, first post-recovery record, or backlog-zero time. It
+therefore cannot measure recovery duration or identify the mechanism
+behind an unfinished Kafka Streams trial.
+
+Table 5.6 presents median per-run p99 \texttt{T2-T1} values across the
+five trials. These values are post-injection output-delay summaries, not
+recovery times. DNF means that fewer than half of the trials completed
+within the observation window.
+
+\begin{table*}[tbh]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}[]{@{}
+  >{\raggedright\arraybackslash}p{(\textwidth - 8\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\textwidth - 8\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 8\tabcolsep) * \real{0.2222}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 8\tabcolsep) * \real{0.2222}}
+  >{\raggedleft\arraybackslash}p{(\textwidth - 8\tabcolsep) * \real{0.2222}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Engine
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Failure mode
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-p99 total
+W1 p99 \texttt{T2-T1}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-p99 t1-t0
+W3 p99 \texttt{T2-T1}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-p99 t2-t1
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-p99 t3-t2
+W4 p99 \texttt{T2-T1}
 \end{minipage} \\
 \midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Kafka Streams & jvm\_kill & 43,976.7 ms & 1,381.3 ms & 42,944.0 ms &
-1,019.2 ms \\
-Kafka Streams & broker\_kill & 9,892.3 ms & 8,455.0 ms & 108.0 ms &
-9,387.3 ms \\
-Kafka Streams & node\_loss & 44,225.0 ms & 1,574.6 ms & 43,240.0 ms &
-960.6 ms \\
-Flink & jvm\_kill & 7,557.5 ms & 1,922.5 ms & 7,232.0 ms & 996.4 ms \\
-Flink & broker\_kill & 9,743.4 ms & 8,783.1 ms & 408.0 ms & 1,009.8
-ms \\
-Flink & node\_loss & 9,208.6 ms & 1,613.7 ms & 8,931.0 ms & 1,062.1
-ms \\
-\end{longtable}
 
-Kafka Streams \texttt{node\_loss} needed a second attempt to reach this
-table. A first attempt returned 706 of 2000 expected records and failed
-verification; the cause was traced to a bug in
-\texttt{scripts/run-failure-test.sh}, not a Kafka Streams recovery
-property. The script recreates the killed container
-(\texttt{docker\ compose\ up\ -d\ -\/-no-deps}), which re-evaluates its
-environment at that moment, and the script had exported Flink-shaped
-identity variables (\texttt{GROUP\_ID}, a hardcoded
-\texttt{-flink-output} topic suffix) without ever exporting
-\texttt{APPLICATION\_ID} for the Kafka Streams case, so the recreated
-container joined a fresh, differently-named consumer group instead of
-resuming the original one. \texttt{jvm\_kill} and \texttt{broker\_kill}
-restart the same container rather than recreating it, so they were
-unaffected by this bug, and Flink's \texttt{node\_loss} happened to
-export the correct Flink-shaped variables already. The script is fixed;
-the buggy first attempt is kept at
-\texttt{experiments/results/kafka\_streams\_identity\_latency\_failure\_node\_loss\_buggy\_run/}
-for the record but is not used as evidence anywhere in this paper. The
-corrected run matched all 2000 expected records.
+
+flink & jvm\_kill & 11.07s (5/5) & 22.86s (5/5) & 22.18s (5/5) \\
+flink & broker\_kill & 2.44s (5/5) & 22.79s (5/5) & 21.73s (5/5) \\
+flink & node\_loss & 11.33s (5/5) & 22.82s (5/5) & 22.01s (5/5) \\
+kafka\_streams & jvm\_kill & 44.66s (5/5) & DNF (0/5) & DNF (0/5) \\
+kafka\_streams & broker\_kill & 2.56s (5/5) & 26.73s (5/5) & 23.51s
+(5/5) \\
+kafka\_streams & node\_loss & 44.05s (5/5) & DNF (1/5) & DNF (1/5) \\
+\bottomrule\noalign{}
+\end{tabular}
+\end{table*}
+
+An earlier Kafka Streams W1 container-loss run returned 706 of 2,000
+expected outputs because the recreated container joined a new
+application identity. The runner now exports the original application
+identity before recreation; the corrected W1 trials in the table passed
+final verification. This incident shows why a completion timeout alone
+cannot establish an engine recovery failure.
 
 \hypertarget{discussion}{%
 \subsection{6. Discussion}\label{discussion}}
 
-\textbf{Final-window emission costs both engines seconds, not
-milliseconds, and each engine gates the cost through a different
-mechanism.} Section 5.3's stability table shows both engines jump from
-single-digit-millisecond processing hops on the stateless workloads to
-multi-second ones on the windowed workloads: Kafka Streams from 5-6 ms
-to 6.1-6.2 s, Flink from 4 ms to 4.3-5.1 s. This rules out the first
-hypothesis this artifact tested, that the cost was specific to Kafka
-Streams'
-\texttt{.suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))}
-call
-(\texttt{experiments/kafka\_streams\_w1/src/main/java/bench/IdentityApp.java},
-lines 114 and 155), which holds every intermediate update and releases
-only the final result once stream time passes the window's end. Flink
-has no equivalent operator in this benchmark's topology, yet pays a
-comparable cost, so ``final-only window output withholds everything
-until the window closes'' is itself expensive in both architectures, not
-a Kafka-Streams-specific tax.
+\textbf{Final-only window output has a multi-second combined visibility
+hop in these runs.} Section 5.3 shows \texttt{T2-T1} rising from
+single-digit milliseconds on W1-W2 to 4.3-6.2 seconds on W3-W4. Kafka
+Streams' suppression operator and Flink's window trigger are different
+implementations, but the current metric does not separate event-time
+waiting from computation. The data support a workload-level observation
+about final-only window visibility under this configuration. They do not
+isolate the cost of either engine's window operator.
 
-What does differ between the two engines is \emph{where in the T0-T3
-decomposition} their respective interval knob lands the cost, and
-Section 5.5's matched tuning comparison isolates it cleanly. Kafka
-Streams checks whether a suppressed window has closed on the same
-cadence as its commit interval; raising that interval from 1,000 ms to
-10,000 ms raises the p99 \emph{processing} hop (\texttt{t2-t1}) 6.1x
-(3,715 to 22,616 ms) while the commit hop stays flat (60 to 58 ms).
-Flink's Kafka sink under \texttt{EXACTLY\_ONCE} commits its pending
-transaction on a lag of one checkpoint cycle, so a longer checkpoint
-interval delays when an \emph{already-computed} result becomes visible
-to a \texttt{read\_committed} consumer, not when the engine computes it:
-raising Flink's checkpoint interval the same 10x raises the p99
-\emph{commit} hop (\texttt{t3-t2}) 10.9x (272 to 2,954 ms) while its
-processing hop barely moves (2,655 to 2,728 ms, 1.03x). Put together,
-this is a coherent story that matches the two recovery mechanisms in
-Section 2: Kafka Streams' commit interval gates a business-logic
-decision (has this window closed), while Flink's checkpoint interval
-gates a durability decision (is this already-computed result now safe to
-expose). A team tuning either engine for lower windowed-output latency
-is tuning two different things that happen to share a similar name.
+The sustained tuning trials show that the two interval changes alter
+different measured hops. Kafka Streams' median per-run p99
+\texttt{T2-T1} rises from 6,085 to 23,155 ms when
+\texttt{COMMIT\_INTERVAL\_MS} changes from 1,000 to 10,000 ms. Flink's
+median per-run p99 \texttt{T3-T2} rises from 732.1 to 8,702.2 ms when
+\texttt{CHECKPOINT\_INTERVAL\_MS} changes over the same range. This
+pattern motivates instrumentation of suppression release, stream-time,
+cache flushes, checkpoints, precommits, and transaction commits. It does
+not establish those mechanisms from the present timestamps alone.
 
-\textbf{Broker failure costs the two engines the same thing, then a
-different thing.} Both engines show \texttt{t1-t0} (ingestion) jump to
-roughly 8.5 to 8.8 seconds under \texttt{broker\_kill}, functionally
-identical, because both are equally blocked from writing to a Kafka
-topic while the broker container is down; this is a
-shared-infrastructure cost, not an engine property. Where they diverge
-is downstream: Kafka Streams' \texttt{t3-t2} (commit-and-consume) hop
-absorbs an extra 9.4 seconds under the same failure, while Flink's stays
-close to its steady-state 1 second. We hypothesize that Kafka Streams'
-EOS-v2 transactional commit protocol needs the transaction coordinator,
-itself broker-hosted, to be healthy before a pending commit can close,
-so a broker outage delays the commit even after the broker is
-technically back, whereas Flink's checkpoint-and-two-phase-commit path
-to the Kafka sink recovers on a different schedule. This remains a
-hypothesis to be tested in future work, as this artifact has one run per
-engine per failure mode, not enough to separate a real architectural
-difference from a single noisy trial.
+\textbf{Broker-kill trials affect both pipelines.} The W1 broker-kill
+trials show increased output delay in both engines. Because both systems
+share the same broker deployment and host, those observations do not
+isolate an engine-specific broker-failure cost.
 
-\textbf{JVM kill and full node loss cost Kafka Streams almost exactly
-the same, which is itself informative.} A killed-and-restarted worker
-costs Kafka Streams roughly 42.9 seconds in the processing hop; a fully
-destroyed-and-recreated worker (\texttt{node\_loss}, which also removes
-the container's anonymous volumes) costs roughly 43.2 seconds, a 0.7\%
-difference on two single-trial runs. If that cost were dominated by
-rebuilding local state from the changelog topic, destroying the volume
-should have cost noticeably more than a plain restart that leaves the
-volume intact; it does not, on \texttt{W1}, which is stateless and has
-no changelog to replay in the first place. That points at
-consumer-group-rebalance timing, not state restoration, as the dominant
-cost for this specific workload, and it is a testable prediction: on a
-stateful workload (\texttt{W3} or \texttt{W4}), where a real changelog
-does need replaying, \texttt{node\_loss} should cost measurably more
-than \texttt{jvm\_kill} if state restore is a real additional cost, and
-would cost about the same as here if it is not. This artifact has not
-yet run either failure mode against a stateful workload, and that
-comparison, not another repeat of the \texttt{W1} trial, is the most
-informative next fault-injection experiment.
-
-Flink's equivalent numbers are smaller and closer together (roughly 7.2
-seconds for \texttt{jvm\_kill}, 8.9 seconds for \texttt{node\_loss},
-both against \texttt{W1}), and both recover through the same path
-regardless of which failure mode is used: a job restart that locates and
-resumes from the latest checkpoint under a mounted, host-backed
-directory
-(\texttt{experiments/flink\_w1/src/main/java/bench/FlinkIdentityJob.java},
-lines 49-79) rather than needing a broker-side consumer-group rebalance
-to complete first. A Kafka Streams restart costing roughly five to six
-times what a Flink restart costs, on the one workload measured so far,
-is the single largest engine-to-engine gap in this paper's evidence; it
-is also the gap resting on the fewest trials (one run per engine per
-failure mode), so it is reported as a finding worth investigating
-further, not a settled property of either architecture.
+\textbf{Stateful fault outcomes require direct recovery
+instrumentation.} Kafka Streams has several censored W3/W4 JVM-kill and
+container/local-volume-loss trials, while reported Flink trials complete
+and pass final verification. The current trace cannot distinguish
+delayed restoration, rebalance failure, transaction retry, an identity
+error, or a permanent correctness failure. It also cannot establish that
+Flink's behavior is independent of broker health or that a Kafka Streams
+timeout is data loss. Those are open measurements, not architectural
+conclusions.
 
 \hypertarget{threats-to-validity}{%
 \subsection{7. Threats to Validity}\label{threats-to-validity}}
@@ -587,6 +594,18 @@ competing for the same physical core would show up as slower than a
 dedicated deployment for both engines equally, not as an engine
 difference.
 
+\textbf{Combined semantic waiting and computation.} The latency probe
+lacks a semantic eligibility timestamp. \texttt{T2-T1} is therefore a
+combined event-time-waiting and engine-output hop for W3-W5. It cannot
+support a claim about engine computation alone or a causal comparison of
+Kafka Streams and Flink processing cost.
+
+\textbf{No performance envelope.} The repository has partial saturation
+and parallelism scripts, but not a complete matrix with repeated trials,
+a bounded-latency definition, lag-slope uncertainty, or correctness
+verification at every rate. The paper is limited to fixed-load
+observations.
+
 \textbf{The join workload's output cardinality does not scale linearly
 with input volume.} \texttt{stream\_stream\_join}'s expected-output
 count depends on how many left and right events fall within each other's
@@ -595,15 +614,16 @@ count depends on how many left and right events fall within each other's
 expected outputs. Applying the same 180,000-event, 30-minute stability
 parameters used for \texttt{W1} through \texttt{W4} to \texttt{W5}
 produced a 3.2 GB expected-output file and a container that ran past 11
-hours without the correctness probe completing
-(\texttt{experiments/results/kafka\_streams\_w5\_latency\_stability\_100\_incomplete/docker-compose.log}).
-\texttt{W5}'s stability figures in this paper use a bounded 120-second,
-12,000-event run instead. This is a benchmark-design finding worth
-stating on its own: an open-loop stability protocol tuned for workloads
-with output volume close to input volume is not safe to apply unmodified
-to a join workload without first bounding the join window relative to
-the intended run duration, or sampling rather than fully verifying
-expected output.
+hours without the correctness probe completing. We treat this as an
+out-of-scope saturation failure for W5 under these parameters. (see
+\texttt{docker-compose.log} for the \texttt{w5\_latency\_stability}
+incomplete run). \texttt{W5}'s stability figures in this paper use a
+bounded 120-second, 12,000-event run instead. This is a benchmark-design
+finding worth stating on its own: an open-loop stability protocol tuned
+for workloads with output volume close to input volume is not safe to
+apply unmodified to a join workload without first bounding the join
+window relative to the intended run duration, or sampling rather than
+fully verifying expected output.
 
 \textbf{Version substitution was compatibility-driven.} Flink 2.2.0
 replaced an originally proposed Flink 2.3.x because the Kafka connector
@@ -617,31 +637,21 @@ paper did not test.
 \subsection{8. Conclusion and Future
 Work}\label{conclusion-and-future-work}}
 
-Twenty out of twenty correctness runs passed, and the harness that makes
-the rest of this paper possible, a shared deterministic workload suite,
-a shared multiset verifier, and a shared four-point latency
-decomposition applied identically to both engines, works end to end.
-Three results are specific enough to be useful to a system designer
-today. First, final-only windowed output costs both engines seconds, not
-milliseconds, under sustained load (a thousandfold jump from each
-engine's own stateless-workload processing hop), so a team choosing
-final-only window semantics for either engine should expect this cost
-rather than be surprised by it. Second, the two engines gate that cost
-through mechanically different configuration knobs: Kafka Streams'
-commit interval controls when the engine decides a window has closed (a
-6.1x processing-hop increase for a 10x larger interval), while Flink's
-checkpoint interval controls when an already-computed result becomes
-visible under exactly-once delivery (a 10.9x commit-hop increase for the
-same 10x change), confirmed by a matched multi-variable expert tuning
-protocol. Third, a Kafka Streams JVM restart or full node loss costs
-roughly five to six times the processing-hop latency of an equivalent
-Flink restart on a stateless workload, and the near-identical cost of
-Kafka Streams' two failure modes to each other (42.9 s vs 43.2 s) argues
-that this is a consumer-group-rebalance tax rather than a state-restore
-cost.
+Fifty independent finite-input correctness trials passed across the two
+engines and five workloads. At the evaluated 100 events/sec fixed load,
+the measured combined \texttt{T2-T1} hop is multi-second for W3 and W4
+while it remains single-digit milliseconds for W1 and W2. The sustained
+W3 tuning study contains three valid trials per engine/interval cell and
+shows that changing the two interval settings changes different measured
+hops. The failure harness provides useful final-verification outcomes
+but does not measure recovery duration or identify the cause of a
+censored run.
 
-The resulting benchmark provides an initial empirical foundation for
-evaluating stream processing infrastructure costs.
+The next revision must add \texttt{T\_e} with raw watermark or
+stream-time evidence, use per-run rather than pooled inference, record
+direct recovery milestones and state-restoration measurements, and
+either complete the saturation and total-cost studies or retain the
+fixed-load, container-observation scope used here.
 
 \hypertarget{references}{%
 \subsection{References}\label{references}}
@@ -701,3 +711,5 @@ evaluating stream processing infrastructure costs.
   Distributed Data Stream Processing Systems,'' IEEE Access, vol.~8,
   pp.~222900-222917, 2020. doi:10.1109/ACCESS.2020.3043948
 \end{enumerate}
+
+\end{document}

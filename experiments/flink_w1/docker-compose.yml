@@ -91,8 +91,11 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
-      /usr/bin/mc mb myminio/flink-checkpoints || true;
+      until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin && /usr/bin/mc mb myminio/flink-checkpoints; do
+        if /usr/bin/mc ls myminio/flink-checkpoints 2>/dev/null; then break; fi;
+        echo 'Waiting for MinIO...';
+        sleep 1;
+      done;
       exit 0;
       "
 
@@ -100,10 +103,14 @@ services:
     build:
       context: .
     depends_on:
-      - kafka-1
-      - kafka-2
-      - kafka-3
-      - minio-setup
+      kafka-1:
+        condition: service_started
+      kafka-2:
+        condition: service_started
+      kafka-3:
+        condition: service_started
+      minio-setup:
+        condition: service_completed_successfully
     environment:
       BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
       GROUP_ID: "${GROUP_ID:-stream-state-bench-flink-w1}"
@@ -115,6 +122,7 @@ services:
       WORKLOAD: "${WORKLOAD:-identity}"
       SOURCE_BOUNDED: "${SOURCE_BOUNDED:-true}"
       CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-1000}"
+      PARALLELISM: "${PARALLELISM:-1}"
     deploy:
       resources:
         limits:

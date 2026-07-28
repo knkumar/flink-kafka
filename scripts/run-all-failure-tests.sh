@@ -29,6 +29,21 @@ for combo in "${shuffled[@]}"; do
     failure=$(echo "$combo" | awk "{print \$3}")
     trial=$(echo "$combo" | awk "{print \$4}")
     
+    local_workload_name="identity"
+    case "$workload" in
+        w1) local_workload_name="identity" ;;
+        w2) local_workload_name="filter_map" ;;
+        w3) local_workload_name="tumbling_count" ;;
+        w4) local_workload_name="sliding_sum" ;;
+        w5) local_workload_name="stream_stream_join" ;;
+    esac
+    engine_name="${engine//-/_}"
+    RESULT_DIR="experiments/results/${engine_name}_${local_workload_name}_latency_failure_${failure}_trial${trial}"
+    if [[ -f "$RESULT_DIR/verification.json" ]]; then
+        echo "Skipping Failure Test: $engine | $workload | $failure | Trial $trial (already completed)"
+        continue
+    fi
+    
     echo "=========================================================="
     echo "Running Failure Test: $engine | $workload | $failure | Trial $trial"
     echo "=========================================================="

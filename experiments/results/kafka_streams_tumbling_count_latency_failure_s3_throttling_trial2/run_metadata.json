@@ -1,0 +1,28 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "tumbling_count",
+  "run_label": "failure_s3_throttling_trial2",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 386,
+  "produced_records": 2001,
+  "producer_topics": [
+    "bench-tumbling-count-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "a26c0aa98efd61a5ffee967985989bd90cee8a4520a35ed83c91719fb6a7398a",
+  "input_topic": "bench-tumbling-count-latency-input",
+  "left_input_topic": "bench-tumbling-count-latency-left-input",
+  "right_input_topic": "bench-tumbling-count-latency-right-input",
+  "output_topic": "bench-tumbling-count-latency-output",
+  "application_id": "stream-state-bench-tumbling-count-latency-tumbling_count-failure_s3_throttling_trial2",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 5698.477,
+  "latency_p95_ms": 14761.422,
+  "latency_p99_ms": 24048.478
+}

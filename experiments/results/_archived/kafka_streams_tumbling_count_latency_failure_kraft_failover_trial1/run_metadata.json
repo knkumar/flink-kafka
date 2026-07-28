@@ -1,0 +1,28 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "workload": "tumbling_count",
+  "run_label": "failure_kraft_failover_trial1",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 386,
+  "produced_records": 2001,
+  "producer_topics": [
+    "bench-tumbling-count-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "a5a84f4d3599d9c7c3747bac2517d4fd46440044dd259c7c96414d5ce6c8eced",
+  "input_topic": "bench-tumbling-count-latency-input",
+  "left_input_topic": "bench-tumbling-count-latency-left-input",
+  "right_input_topic": "bench-tumbling-count-latency-right-input",
+  "output_topic": "bench-tumbling-count-latency-output",
+  "application_id": "stream-state-bench-tumbling-count-latency-tumbling_count-failure_kraft_failover_trial1",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 7381.922,
+  "latency_p95_ms": 17281.192,
+  "latency_p99_ms": 26481.14
+}

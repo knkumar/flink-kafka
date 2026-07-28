@@ -28,6 +28,12 @@ for combo in "${shuffled[@]}"; do
   start_ms=$(echo "$combo" | awk "{print \$4}")
   trial=$(echo "$combo" | awk "{print \$5}")
   
+  RESULT_DIR="experiments/results/${engine}_${workload_id}_${RUN_LABEL}_trial${trial}"
+  if [[ -f "$RESULT_DIR/verification.json" ]]; then
+      echo "Skipping correctness trial ${trial}/${TRIALS} for $engine $workload (already completed)"
+      continue
+  fi
+  
   echo "--- Starting correctness trial ${trial}/${TRIALS} for $engine $workload ---"
   
   # Tear down completely to ensure genuinely independent trials

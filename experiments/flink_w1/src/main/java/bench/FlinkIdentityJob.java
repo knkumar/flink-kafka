@@ -46,42 +46,54 @@ public final class FlinkIdentityJob {
 
         org.apache.flink.configuration.Configuration conf = new org.apache.flink.configuration.Configuration();
         String topologyId = "stream-state-bench-flink-" + workload;
+        conf.setString("s3.access-key", "minioadmin");
+        conf.setString("s3.secret-key", "minioadmin");
+        conf.setString("s3.endpoint", "http://minio:9000");
+        conf.setString("s3.path.style.access", "true");
         conf.setString("state.checkpoints.dir", "s3://flink-checkpoints/" + topologyId);
         
-        java.io.File cpDir = new java.io.File("/tmp/flink-checkpoints/" + topologyId) // Not used for s3;
-        if (cpDir.exists() && cpDir.isDirectory()) {
-            java.io.File[] jobDirs = cpDir.listFiles();
-            if (jobDirs != null) {
-                long maxId = -1;
-                java.io.File latestChk = null;
-                for (java.io.File jDir : jobDirs) {
-                    if (!jDir.isDirectory()) continue;
-                    java.io.File[] chkDirs = jDir.listFiles();
-                    if (chkDirs != null) {
-                        for (java.io.File cDir : chkDirs) {
-                            if (cDir.getName().startsWith("chk-")) {
-                                try {
-                                    long id = Long.parseLong(cDir.getName().substring(4));
-                                    if (id > maxId) {
-                                        maxId = id;
-                                        latestChk = cDir;
-                                    }
-                                } catch (Exception ignored) {}
+        try {
+            org.apache.flink.core.fs.FileSystem.initialize(conf, null);
+            org.apache.flink.core.fs.Path cpPath = new org.apache.flink.core.fs.Path("s3://flink-checkpoints/" + topologyId);
+            org.apache.flink.core.fs.FileSystem fs = cpPath.getFileSystem();
+            if (fs.exists(cpPath)) {
+                org.apache.flink.core.fs.FileStatus[] jobDirs = fs.listStatus(cpPath);
+                if (jobDirs != null) {
+                    long maxId = -1;
+                    org.apache.flink.core.fs.Path latestChk = null;
+                    for (org.apache.flink.core.fs.FileStatus jDir : jobDirs) {
+                        if (!jDir.isDir()) continue;
+                        org.apache.flink.core.fs.FileStatus[] chkDirs = fs.listStatus(jDir.getPath());
+                        if (chkDirs != null) {
+                            for (org.apache.flink.core.fs.FileStatus cDir : chkDirs) {
+                                String name = cDir.getPath().getName();
+                                if (name.startsWith("chk-")) {
+                                    try {
+                                        long id = Long.parseLong(name.substring(4));
+                                        if (id > maxId) {
+                                            maxId = id;
+                                            latestChk = cDir.getPath();
+                                        }
+                                    } catch (Exception ignored) {}
+                                }
                             }
                         }
                     }
-                }
-                if (latestChk != null) {
-                    System.out.println("Resuming from checkpoint: " + latestChk.getAbsolutePath());
-                    org.apache.flink.runtime.jobgraph.SavepointRestoreSettings settings = 
-                        org.apache.flink.runtime.jobgraph.SavepointRestoreSettings.forPath("file://" + latestChk.getAbsolutePath());
-                    org.apache.flink.runtime.jobgraph.SavepointRestoreSettings.toConfiguration(settings, conf);
+                    if (latestChk != null) {
+                        System.out.println("Resuming from checkpoint: " + latestChk.toString());
+                        org.apache.flink.runtime.jobgraph.SavepointRestoreSettings settings = 
+                            org.apache.flink.runtime.jobgraph.SavepointRestoreSettings.forPath(latestChk.toString());
+                        org.apache.flink.runtime.jobgraph.SavepointRestoreSettings.toConfiguration(settings, conf);
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.err.println("Failed to parse checkpoints from S3: " + e.getMessage());
         }
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(conf);
-        env.setParallelism(1);
+        int parallelism = Integer.parseInt(System.getenv().getOrDefault("PARALLELISM", "1"));
+        env.setParallelism(parallelism);
         env.enableCheckpointing(checkpointIntervalMs, CheckpointingMode.EXACTLY_ONCE);
         env.getCheckpointConfig().setCheckpointTimeout(30_000);
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
@@ -101,7 +113,7 @@ public final class FlinkIdentityJob {
             KafkaSource<String> leftSource = source(bootstrapServers, leftInputTopic, groupId + "-left", sourceBounded);
             KafkaSource<String> rightSource = source(bootstrapServers, rightInputTopic, groupId + "-right", sourceBounded);
             WatermarkStrategy<String> joinWatermarks = WatermarkStrategy
-                    .<String>forBoundedOutOfOrderness(Duration.ofSeconds(2))
+                    .<String>forBoundedOutOfOrderness(java.time.Duration.ofSeconds(2))
                     .withTimestampAssigner((value, timestamp) -> Long.parseLong(parse(value)[3]));
             DataStream<String> left = env.fromSource(leftSource, joinWatermarks, "left-kafka-source");
             DataStream<String> right = env.fromSource(rightSource, joinWatermarks, "right-kafka-source");

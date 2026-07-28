@@ -1,0 +1,28 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "workload": "sliding_sum",
+  "run_label": "failure_s3_throttling_trial4",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 1286,
+  "produced_records": 2001,
+  "producer_topics": [
+    "bench-sliding-sum-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "52b87172ce5ba68b40ff28fbce56e9ef99e7ca9b1d9cacb4b1c06d88343ef0e3",
+  "input_topic": "bench-sliding-sum-latency-input",
+  "left_input_topic": "bench-sliding-sum-latency-left-input",
+  "right_input_topic": "bench-sliding-sum-latency-right-input",
+  "output_topic": "bench-sliding-sum-latency-output",
+  "application_id": "stream-state-bench-sliding-sum-latency-sliding_sum-failure_s3_throttling_trial4",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 4686.1,
+  "latency_p95_ms": 17841.885,
+  "latency_p99_ms": 22583.946
+}

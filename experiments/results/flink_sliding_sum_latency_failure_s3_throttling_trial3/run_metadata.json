@@ -1,0 +1,32 @@
+{
+  "events": 2000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 600000,
+  "workload": "sliding_sum",
+  "run_label": "failure_s3_throttling_trial3",
+  "rate_per_sec": 20.0,
+  "expected_output_records": 1286,
+  "produced_records": 2001,
+  "producer_topics": [
+    "bench-sliding-sum-latency-input"
+  ],
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "flink_app_image_id": "1ae3b612c8faa97ed5fd76eb1ad17f74a803de2a384f725253ccfb9765c08a18",
+  "flink_version": "2.2.0",
+  "flink_kafka_connector_version": "5.0.0-2.2",
+  "input_topic": "bench-sliding-sum-latency-input",
+  "left_input_topic": "bench-sliding-sum-latency-left-input",
+  "right_input_topic": "bench-sliding-sum-latency-right-input",
+  "output_topic": "bench-sliding-sum-latency-flink-output",
+  "group_id": "stream-state-bench-flink-sliding-sum-latency-failure_s3_throttling_trial3",
+  "transactional_id_prefix": "stream-state-bench-flink-sliding-sum-latency-failure_s3_throttling_trial3",
+  "source_bounded": false,
+  "delivery_guarantee": "exactly_once",
+  "consumer_isolation": "read_committed",
+  "latency_measurement": "host_write_to_read_committed_visibility_delay_proxy",
+  "latency_p50_ms": 4061.229,
+  "latency_p95_ms": 17402.579,
+  "latency_p99_ms": 21954.0
+}

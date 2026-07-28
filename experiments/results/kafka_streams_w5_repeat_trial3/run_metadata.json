@@ -1,0 +1,21 @@
+{
+  "events": 1000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 1000,
+  "workload": "stream_stream_join",
+  "run_label": "repeat_trial3",
+  "expected_output_records": 11024,
+  "producer_input_records": 2000,
+  "left_producer_input_records": 1000,
+  "right_producer_input_records": 1000,
+  "kafka_image": "apache/kafka:4.3.1",
+  "kafka_image_id": "sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837",
+  "streams_image_id": "d08565441103556d304eae9fe8c38576869ca89686f54fd10301d558b5a3c6ac",
+  "input_topic": "bench-w5-input",
+  "left_input_topic": "bench-w5-left-input",
+  "right_input_topic": "bench-w5-right-input",
+  "output_topic": "bench-w5-output",
+  "processing_guarantee": "exactly_once_v2",
+  "consumer_isolation": "read_committed"
+}

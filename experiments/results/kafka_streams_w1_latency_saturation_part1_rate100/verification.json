@@ -1,0 +1,16 @@
+{
+  "workload": "identity",
+  "actual_jsonl": "experiments/results/kafka_streams_w1_latency_saturation_part1_rate100/actual.jsonl",
+  "events": 3000,
+  "keys": 100,
+  "seed": 7,
+  "start_ms": 0,
+  "verification": {
+    "expected_count": 3000,
+    "actual_count": 3000,
+    "missing_count": 0,
+    "unexpected_count": 0,
+    "duplicate_count": 0,
+    "passed": true
+  }
+}
