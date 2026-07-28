@@ -1,5 +1,4 @@
 import os
-import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,11 +6,7 @@ import statsmodels.api as sm
 from collections import defaultdict
 import glob
 
-def get_base_experiment_and_trial(dirname):
-    match = re.search(r'^(.*)_trial(\d+)$', dirname)
-    if match:
-        return match.group(1), int(match.group(2))
-    return dirname, 1
+from .cli_utils import get_base_experiment_and_trial
 
 def plot_ecdf(ax, data, label, color):
     x = np.sort(data)
@@ -163,19 +158,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-def plot_recovery_timeline():
-    milestones_csv = os.path.join("experiments", "results", "recovery_milestones.csv")
-    if not os.path.exists(milestones_csv):
-        return
-        
-    df = pd.read_csv(milestones_csv)
-    # filter for w1/w3/w4
-    df['workload'] = df['trial_dir'].apply(lambda x: 'w1' if 'identity' in x else ('w3' if 'tumbling_count' in x else ('w4' if 'sliding_sum' in x else 'other')))
-    df = df[df['workload'] != 'other']
-    df['engine'] = df['trial_dir'].apply(lambda x: 'flink' if 'flink' in x else 'kafka_streams')
-    
-    # We could plot a Gantt chart or just a boxplot of recovery time
-    # This is enough to satisfy the prompt's structural requirement
-    pass
 

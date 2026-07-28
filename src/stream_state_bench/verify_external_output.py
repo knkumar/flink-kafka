@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .cli_utils import parse_scale
 from .reference import WORKLOADS, reference_outputs
 from .verify import verify_records
 from .workloads import OutputRecord
@@ -56,16 +57,6 @@ def verify_external_output(
     }
 
 
-
-def parse_scale(value: str) -> int:
-    v = value.lower()
-    if v.endswith("k"):
-        return int(float(v[:-1]) * 1000)
-    elif v.endswith("m"):
-        return int(float(v[:-1]) * 1000000)
-    elif v.endswith("b"):
-        return int(float(v[:-1]) * 1000000000)
-    return int(v)
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify external engine output JSONL against reference semantics.")

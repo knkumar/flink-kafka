@@ -5,11 +5,7 @@ import pandas as pd
 from collections import defaultdict
 import glob
 
-def get_base_experiment_and_trial(dirname):
-    match = re.search(r'^(.*)_trial(\d+)$', dirname)
-    if match:
-        return match.group(1), int(match.group(2))
-    return dirname, 1
+from .cli_utils import get_base_experiment_and_trial
 
 def bootstrap_median_ci(data, n_bootstraps=1000, ci=95):
     data = np.array(data)
