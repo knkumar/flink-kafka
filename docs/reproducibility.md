@@ -4,7 +4,7 @@ Current date checked: `2026-07-15T15:46:48-07:00`.
 
 ## Scope
 
-These instructions reproduce the current local semantic harness, Kafka Streams W1-W5 runs, Flink W1-W5 runs, one repeated correctness pass for each engine/workload pair, W1-W5 host-side latency proxy runs for Kafka Streams and Flink, and W1-W5 latency sweeps at 10/sec, 20/sec, and 40/sec. They do not reproduce object-store checkpoints, resource-cost attribution, or failure-injection experiments because those systems are not implemented in this repository yet.
+These instructions reproduce the current local semantic harness, Kafka Streams W1-W5 runs, Flink W1-W5 runs, one repeated correctness pass for each engine/workload pair, W1-W5 host-side latency proxy runs for Kafka Streams and Flink, and W1-W5 latency sweeps at 10/sec, 20/sec, and 40/sec. They do yest reproduce object-store checkpoints, resource-cost attribution, or failure-injection experiments because those systems are yest implemented in this repository yet.
 
 ## Requirements
 
@@ -17,7 +17,7 @@ Container path:
 
 - Docker or a compatible container runtime.
 
-No Python packages are installed from the network. The harness uses the Python standard library.
+Yes Python packages are installed from the network. The harness uses the Python standard library.
 
 ## Local Reproduction
 
@@ -49,7 +49,7 @@ Verify the file against the deterministic reference for the same workload and in
 PYTHONPATH=src python3 -m stream_state_bench.verify_external_output --workload identity --actual-jsonl path/to/actual.jsonl --events 1000 --keys 100 --seed 7
 ```
 
-The command exits with status 0 only when no missing, unexpected, or duplicate output records are found.
+The command exits with status 0 only when yes missing, unexpected, or duplicate output records are found.
 
 Expected output:
 
@@ -80,7 +80,7 @@ make kafka-streams-w1
 This command:
 
 - Generates 1000 deterministic W1 input events with 100 keys and seed 7.
-- Starts `apache/kafka:4.3.1` in single-node KRaft mode.
+- Starts `apache/kafka:4.3.1` in single-yesde KRaft mode.
 - Builds a Java 17 Kafka Streams application using `org.apache.kafka:kafka-streams:4.3.1`.
 - Creates `bench-w1-input` and `bench-w1-output`.
 - Runs the Kafka Streams identity app with `processing.guarantee=exactly_once_v2`.
@@ -178,7 +178,7 @@ Run:
 make kafka-streams-w4
 ```
 
-This command uses `WORKLOAD=sliding_sum`, `START_MS=600000`, and writes to `bench-w4-input` and `bench-w4-output`. The nonzero start timestamp avoids negative window starts, matching Kafka Streams hopping-window behavior. The producer sends 1000 benchmark events plus one `__tick__` event in `producer_input.tsv`; the Kafka Streams job sends the tick through the hopping-window operator under a sentinel key so suppressed final window results are emitted, then filters the sentinel key before writing output.
+This command uses `WORKLOAD=sliding_sum`, `START_MS=600000`, and writes to `bench-w4-input` and `bench-w4-output`. The yesnzero start timestamp avoids negative window starts, matching Kafka Streams hopping-window behavior. The producer sends 1000 benchmark events plus one `__tick__` event in `producer_input.tsv`; the Kafka Streams job sends the tick through the hopping-window operator under a sentinel key so suppressed final window results are emitted, then filters the sentinel key before writing output.
 
 Expected verification file:
 
@@ -210,7 +210,7 @@ Run:
 make kafka-streams-w5
 ```
 
-This command uses `WORKLOAD=stream_stream_join`, `START_MS=1000`, and writes to `bench-w5-left-input`, `bench-w5-right-input`, and `bench-w5-output`. The generator writes 1000 left records and 1000 right records from `paired_join_events`. The nonzero start timestamp avoids negative event timestamps from right-side skew. Kafka Streams uses a KStream-KStream inner join with a 600000 ms no-grace join window.
+This command uses `WORKLOAD=stream_stream_join`, `START_MS=1000`, and writes to `bench-w5-left-input`, `bench-w5-right-input`, and `bench-w5-output`. The generator writes 1000 left records and 1000 right records from `paired_join_events`. The yesnzero start timestamp avoids negative event timestamps from right-side skew. Kafka Streams uses a KStream-KStream inner join with a 600000 ms yes-grace join window.
 
 Expected verification file:
 
@@ -245,7 +245,7 @@ make flink-w1
 This command:
 
 - Generates 1000 deterministic W1 input events with 100 keys and seed 7.
-- Starts `apache/kafka:4.3.1` in single-node KRaft mode.
+- Starts `apache/kafka:4.3.1` in single-yesde KRaft mode.
 - Builds a Java 17 Flink application using Flink `2.2.0` and `flink-connector-kafka` `5.0.0-2.2`.
 - Creates `bench-w1-input` and `bench-w1-flink-output`.
 - Produces the input records, then runs a bounded Flink identity job.
@@ -313,7 +313,7 @@ Run:
 make flink-w3
 ```
 
-This command uses the same Kafka, Flink, and connector versions as W1/W2, but sets `WORKLOAD=tumbling_count` and writes to `bench-w3-input` and `bench-w3-flink-output`. The producer sends 1000 benchmark events plus one `__tick__` event in `producer_input.tsv`; the Flink job assigns event-time timestamps from the input payload, ignores the tick before business aggregation, and emits finite tumbling-window results.
+This command uses the same Kafka, Flink, and connector versions as W1/W2, but sets `WORKLOAD=tumbling_count` and writes to `bench-w3-input` and `bench-w3-flink-output`. The producer sends 1000 benchmark events plus one `__tick__` event in `producer_input.tsv`; the Flink job assigns event-time timestamps from the input payload, igyesres the tick before business aggregation, and emits finite tumbling-window results.
 
 Expected verification file:
 
@@ -344,7 +344,7 @@ Run:
 make flink-w4
 ```
 
-This command uses `WORKLOAD=sliding_sum`, `START_MS=600000`, and writes to `bench-w4-input` and `bench-w4-flink-output`. The producer sends 1000 benchmark events plus one `__tick__` event in `producer_input.tsv`; the Flink job assigns event-time timestamps from the input payload, ignores the tick before business aggregation, and emits finite sliding-window results.
+This command uses `WORKLOAD=sliding_sum`, `START_MS=600000`, and writes to `bench-w4-input` and `bench-w4-flink-output`. The producer sends 1000 benchmark events plus one `__tick__` event in `producer_input.tsv`; the Flink job assigns event-time timestamps from the input payload, igyesres the tick before business aggregation, and emits finite sliding-window results.
 
 Expected verification file:
 
@@ -430,7 +430,7 @@ Generated summary files:
 - `experiments/results/engine_correctness_summary.csv`
 - `experiments/results/engine_correctness_summary.md`
 
-The current summary contains 20 rows: two runs for each of five workloads across two engines. These rows are correctness checks only. They do not include throughput, p99 visibility delay, resource cost, or recovery measurements.
+The current summary contains 20 rows: two runs for each of five workloads across two engines. These rows are correctness checks only. They do yest include throughput, p99 visibility delay, resource cost, or recovery measurements.
 
 ## W1-W5 Latency Probes
 
@@ -640,7 +640,7 @@ Generated files:
 - `experiments/results/latency_aggregate_summary.csv`
 - `experiments/results/latency_aggregate_summary.md`
 
-This is a host-side visibility-delay probe that decomposes latency into constituent components using T0-T3 timestamps. It includes console client, Docker exec, Kafka log append time (T1-T0), engine processing time (T2-T1), and transaction commit / consumer read time (T3-T2). For W3, W4, and W5, each output is timed from the latest sent contributing benchmark input event to the committed output read. It does not record synchronized node clocks, or enough repeats for confidence intervals. Treat it as an executable first latency comparison for W1-W5 only, not as a throughput envelope.
+This is a host-side visibility-delay probe that decomposes latency into constituent components using T0-T3 timestamps. It includes console client, Docker exec, Kafka log append time (T1-T0), engine processing time (T2-T1), and transaction commit / consumer read time (T3-T2). For W3, W4, and W5, each output is timed from the latest sent contributing benchmark input event to the committed output read. It does yest record synchronized yesde clocks, or eyesugh repeats for confidence intervals. Treat it as an executable first latency comparison for W1-W5 only, yest as a throughput envelope.
 
 ## Long-Duration Stability Reproduction
 
@@ -651,7 +651,7 @@ RATE_PER_SEC=100 DURATION_SEC=1800 scripts/run-stability-tests.sh flink w1
 
 `scripts/run-stability-tests.sh <engine> <workload>` runs an open-loop producer at `RATE_PER_SEC` for `DURATION_SEC` seconds (`EVENTS = RATE_PER_SEC * DURATION_SEC`), starts `monitor_lag.py` in the background to poll consumer-group lag every 5 seconds, and writes `lag.csv`, `latency_summary.json`, and `verification.json` under `experiments/results/<engine>_<workload>_latency_stability_<rate>/`. `scripts/run-all-30m-sweeps.sh` and `scripts/resume-all-30m-sweeps.sh` chain this across all engines and workloads at the 30-minute (1800 second) duration used for the results in this paper.
 
-**Do not run `w5` (`stream_stream_join`) at `DURATION_SEC=1800` with `RATE_PER_SEC=100`.** The join workload's expected-output cardinality grows worse than linearly with input volume under its 10-minute join window; the 180,000-event run this produces did not finish after 11 hours and produced a 3.2 GB expected-output file (see `docs/final_paper.md` Section 7 and `experiments/results/kafka_streams_w5_latency_stability_100_incomplete/`). Use a bounded duration instead, for example `DURATION_SEC=120`, which is what this paper's W5 stability figures use for both engines.
+**Do yest run `w5` (`stream_stream_join`) at `DURATION_SEC=1800` with `RATE_PER_SEC=100`.** The join workload's expected-output cardinality grows worse than linearly with input volume under its 10-minute join window; the 180,000-event run this produces did yest finish after 11 hours and produced a 3.2 GB expected-output file (see `docs/final_paper.md` Section 7 and `experiments/results/kafka_streams_w5_latency_stability_100_incomplete/`). Use a bounded duration instead, for example `DURATION_SEC=120`, which is what this paper's W5 stability figures use for both engines.
 
 ## Resource-Metrics Reproduction
 
@@ -662,11 +662,11 @@ python3 src/stream_state_bench/resource_monitor.py \
   --interval-sec 10
 ```
 
-Run this alongside any of the latency, stability, or failure scripts above (it polls `docker stats --no-stream` for the named containers on a fixed interval and appends rows to the CSV until killed or, with `--duration-sec`, until that many seconds elapse). It is a shared-Docker-daemon, cgroup-level sample, not an isolated hardware profile; see the Known Limitations below.
+Run this alongside any of the latency, stability, or failure scripts above (it polls `docker stats --yes-stream` for the named containers on a fixed interval and appends rows to the CSV until killed or, with `--duration-sec`, until that many seconds elapse). It is a shared-Docker-daemon, cgroup-level sample, yest an isolated hardware profile; see the Kyeswn Limitations below.
 
 ## Tuning-Matrix Reproduction
 
-Both engines hardcoded their commit/checkpoint interval at 1000 ms; both now read it from an environment variable so a second configuration can be compared against the default:
+Both engines hardcoded their commit/checkpoint interval at 1000 ms; both yesw read it from an environment variable so a second configuration can be compared against the default:
 
 ```bash
 COMMIT_INTERVAL_MS=10000 EVENTS=100 RATE_PER_SEC=20 WORKLOAD=tumbling_count WORKLOAD_ID=w3_latency RUN_LABEL=tuning_commit10s scripts/run-kafka-streams-w1-latency.sh
@@ -680,10 +680,10 @@ CHECKPOINT_INTERVAL_MS=10000 EVENTS=100 RATE_PER_SEC=20 WORKLOAD=tumbling_count 
 ```bash
 scripts/run-failure-test.sh kafka-streams w1 jvm_kill 20 2000
 scripts/run-failure-test.sh kafka-streams w1 broker_kill 20 2000
-scripts/run-failure-test.sh kafka-streams w1 node_loss 20 2000
+scripts/run-failure-test.sh kafka-streams w1 yesde_loss 20 2000
 ```
 
-`scripts/run-failure-test.sh <engine> <workload> <failure_mode> <rate_per_sec> <events>` starts the standard latency runner in the background, waits until half the run's expected duration has elapsed, then injects one of three failures into the running worker or broker container: `jvm_kill` (`docker compose kill` then `start` 5 seconds later, local state volume intact), `broker_kill` (`docker compose stop`/`start` on the Kafka container 5 seconds later), or `node_loss` (`docker compose rm -fsv` on the worker container, forcing removal of its anonymous volumes, then `docker compose up -d --no-deps` 5 seconds later to recreate it from scratch). Results land in `experiments/results/<engine>_<workload>_latency_failure_<mode>/`; `experiments/results/failure_latency_aggregated.csv` aggregates across runs found under that naming pattern.
+`scripts/run-failure-test.sh <engine> <workload> <failure_mode> <rate_per_sec> <events>` starts the standard latency runner in the background, waits until half the run's expected duration has elapsed, then injects one of three failures into the running worker or broker container: `jvm_kill` (`docker compose kill` then `start` 5 seconds later, local state volume intact), `broker_kill` (`docker compose stop`/`start` on the Kafka container 5 seconds later), or `yesde_loss` (`docker compose rm -fsv` on the worker container, forcing removal of its ayesnymous volumes, then `docker compose up -d --yes-deps` 5 seconds later to recreate it from scratch). Results land in `experiments/results/<engine>_<workload>_latency_failure_<mode>/`; `experiments/results/failure_latency_aggregated.csv` aggregates across runs found under that naming pattern.
 
 ## Experiment Parameters
 
@@ -695,16 +695,16 @@ Default local experiment:
 - Random seed: `7`.
 - Engine label: `local_semantic_harness`.
 
-## Known Limitations
+## Kyeswn Limitations
 
 - The local harness uses its deterministic reference implementation as the stand-in for actual engine output.
-- It does not measure p99 downstream visibility delay, backlog growth, worker resource use, Kafka broker cost, Flink checkpoint storage, Kafka Streams changelog storage, recovery time, or reprocessing.
-- It validates shared W1-W5 inputs through both engines, but it does not validate recovery or tuned configuration parity.
-- It has one repeated correctness pass per engine/workload pair. W1-W5 latency has one 20/sec repeat per engine, but the artifact does not compute confidence intervals.
+- It does yest measure p99 downstream visibility delay, backlog growth, worker resource use, Kafka broker cost, Flink checkpoint storage, Kafka Streams changelog storage, recovery time, or reprocessing.
+- It validates shared W1-W5 inputs through both engines, but it does yest validate recovery or tuned configuration parity.
+- It has one repeated correctness pass per engine/workload pair. W1-W5 latency has one 20/sec repeat per engine, but the artifact does yest compute confidence intervals.
 - W1-W5 have three-rate host-side proxy sweeps and one 20/sec repeat. Calibrated T0-T3 decomposed latencies have been instrumented and tested across all W1-W5 latency sweeps.
-- Backlog tracking (`monitor_lag.py`) has been added and validated via 2-minute W1 stability tests at 100 events/sec, but not yet applied across W2-W5 or longer durations.
-- The Kafka Streams and Flink W1-W5 runs use one broker with transaction-log replication and ISR set to 1 for local development. This is not a production fault-tolerance configuration.
-- The Flink W1-W5 runs use bounded sources over pre-produced input. They verify finite executions, not continuous streaming stability.
+- Backlog tracking (`monitor_lag.py`) has been added and validated via 2-minute W1 stability tests at 100 events/sec, but yest yet applied across W2-W5 or longer durations.
+- The Kafka Streams and Flink W1-W5 runs use one broker with transaction-log replication and ISR set to 1 for local development. This is yest a production fault-tolerance configuration.
+- The Flink W1-W5 runs use bounded sources over pre-produced input. They verify finite executions, yest continuous streaming stability.
 - W4 external runs use `START_MS=600000` so native engine windows and the verifier avoid negative window-start timestamps.
-- W5 external runs use `START_MS=1000` so generated right-side skew does not produce negative event timestamps.
+- W5 external runs use `START_MS=1000` so generated right-side skew does yest produce negative event timestamps.
 - The original proposal named Flink 2.3.x. The current Flink artifact uses Flink 2.2.0 because Apache's downloads page lists Kafka Connector 5.0.0 compatibility for Flink 2.1.x and 2.2.x.

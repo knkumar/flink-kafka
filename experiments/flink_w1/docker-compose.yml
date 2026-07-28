@@ -1,6 +1,6 @@
 services:
   kafka-1:
-    image: apache/kafka:4.3.1
+    image: apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
     container_name: stream-state-bench-flink-kafka-1
     environment:
       KAFKA_NODE_ID: "1"
@@ -25,7 +25,7 @@ services:
           memory: 4G
 
   kafka-2:
-    image: apache/kafka:4.3.1
+    image: apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
     container_name: stream-state-bench-flink-kafka-2
     environment:
       KAFKA_NODE_ID: "2"
@@ -50,7 +50,7 @@ services:
           memory: 4G
 
   kafka-3:
-    image: apache/kafka:4.3.1
+    image: apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
     container_name: stream-state-bench-flink-kafka-3
     environment:
       KAFKA_NODE_ID: "3"
@@ -75,7 +75,7 @@ services:
           memory: 4G
 
   minio:
-    image: minio/minio
+    image: minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     container_name: stream-state-bench-flink-minio
     command: server /data
     environment:
@@ -86,7 +86,7 @@ services:
       - "9001:9001"
 
   minio-setup:
-    image: minio/mc
+    image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
     depends_on:
       - minio
     entrypoint: >

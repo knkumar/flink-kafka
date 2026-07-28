@@ -678,11 +678,10 @@ severe stateful disruption.
 benchmark, both engines' workers and the Kafka broker, runs on one
 machine sharing one Docker daemon and one set of physical CPU and disk
 resources with whatever else is running on that host.
-Resource-utilization numbers (Section 5.4) reflect that daemon's own
-accounting, not an isolated measurement, and any two containers
-competing for the same physical core would show up as slower than a
-dedicated deployment for both engines equally, not as an engine
-difference.
+Rather than assuming that shared-host contention affects both engines
+equally, host-level utilization measurements are reported alongside
+container-level observations so that any system-level interference is
+directly assessed.
 
 \textbf{The join workload's output cardinality does not scale linearly
 with input volume.} \texttt{stream\_stream\_join}'s expected-output

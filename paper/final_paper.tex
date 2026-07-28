@@ -83,19 +83,23 @@ workloads spanning stateless transforms, tumbling and sliding windows,
 and a stream-stream join, run on Apache Kafka 4.3.1 (KRaft mode), Kafka
 Streams 4.3.1, and Flink 2.2.0. It reports fixed-load visibility-delay
 measurements, worker and broker container samples, configuration
-sensitivity, and fault-injection outcomes on one shared host. Fifty
-independent correctness trials, five per engine/workload combination,
-matched their expected output with zero missing, unexpected, or
-duplicate records. Under 100 events/sec load for 30 minutes, the
-combined 	exttt{T2-T1} hop ranges from 4-6 milliseconds for W1-W2 to
-4.3-6.2 seconds for W3-W4; it includes both event-time waiting and
-engine work, because the harness does not yet record semantic
-eligibility 	exttt{T\_e}. A sustained W3 tuning study contains three
-valid trials for each engine and interval, each with 6,000 inputs and
-997 matched outputs. Fault injection shows that several Kafka Streams
-stateful trials did not finish within the observation window while the
-corresponding Flink trials completed, but the artifact does not directly
-measure recovery milestones or prove permanent data loss.
+sensitivity, and fault-injection outcomes on one shared host. The main
+comparative findings cover the stateless transforms and final-only 
+windowed aggregations. Fifty independent correctness trials, five per 
+engine/workload combination, matched their expected output with zero 
+missing, unexpected, or duplicate records. Under 100 events/sec load 
+for 30 minutes, the combined \texttt{T2-T1} hop ranges from 4-6 
+milliseconds for W1-W2 to 4.3-6.2 seconds for W3-W4; it includes both 
+event-time waiting and engine work, because the harness does not yet 
+record semantic eligibility \texttt{T\_e}. A sustained W3 tuning study 
+contains three valid trials for each engine and interval, each with 
+6,000 inputs and 997 matched outputs. The stream-stream join (W5) is 
+retained as a benchmark-design and correctness case study due to 
+output-cardinality blowup limiting sustained comparable runs. Fault 
+injection shows that several Kafka Streams stateful trials did not 
+finish within the observation window while the corresponding Flink 
+trials completed, but the artifact does not directly measure recovery 
+milestones or prove permanent data loss.
 \end{abstract}
 
 \hypertarget{introduction}{%
@@ -130,7 +134,7 @@ conclusion is structurally impossible. Section 5 reports what that
 harness has actually measured so far: correctness across all five
 workloads, latency under light and sustained load, a first
 fault-injection pass, and the shape of a stateful-window cost that both
-engines pay, not a Kafka-Streams-specific tax, though each engine gates
+engines pay, not a Kafka-Streams-specific tax, though each engine precedes
 that cost through a mechanically different part of its own pipeline.
 
 \hypertarget{related-work-and-background}{%
@@ -158,7 +162,7 @@ differs on two axes rather than on workload novelty. First, it
 decomposes each latency number into a four-point T0-T3 breakdown so a
 slow total can be attributed to broker ingestion, engine processing, or
 commit-and-consume visibility rather than left as one figure. Second, it
-treats fault-recovery cost as a first-class measured quantity for both
+treats fault-measured recovery duration as a first-class measured quantity for both
 engines rather than a steady-state footnote. The narrow engine pair,
 Flink and Kafka Streams, is deliberate: they are the two systems that
 keep local RocksDB state and offer exactly-once over Kafka but place
@@ -181,7 +185,7 @@ experiments (Section 5.6) are designed to exercise: a Flink JVM or node
 kill should recover from a checkpoint, and a Kafka Streams JVM or node
 kill should recover by replaying a changelog. The proposal that preceded
 this paper (\texttt{proposal.md}) targets the EDBT Experiments,
-Analysis, and Benchmarks track specifically because it found the
+Analysis, and Benchmarks track specifically associated with it found the
 worker-throughput-only framing of the benchmarks above insufficiently
 informative for infrastructure cost decisions. This paper's contribution
 is the decomposed-latency and fault-cost harness and its first round of
@@ -208,12 +212,7 @@ measurements, not a new query suite or a survey of the field.
   drain, duplicate records, and downstream visibility delay?
 \end{enumerate}
 
-This paper does not estimate a saturation boundary, total-system cost
-distribution, or recovery time. RQ1 has five independent correctness
-trials for each engine/workload combination and a fixed-rate latency
-picture for W1-W4. RQ2 reports container samples, not normalized
-infrastructure cost. RQ3 reports post-injection output observations and
-final verification within a bounded observation window.
+This paper does not estimate a saturation boundary, sustainable throughput, capacity envelope, complete recovery semantics, or total-system cost distribution. Neither engine was tested near its limit. The 10/20/40 records/sec finite-input runs are not a scaling study. All conclusions are conditional on the specific 100 events/sec workload, fixed state size, and shared hardware evaluated here. RQ1 has five independent correctness trials for each engine/workload combination and a fixed-rate latency picture for W1-W4. RQ2 reports container samples, not normalized infrastructure cost. RQ3 reports post-injection output observations and final verification within a bounded observation window.
 
 \hypertarget{methodology}{%
 \subsection{4. Methodology}\label{methodology}}
@@ -245,9 +244,9 @@ ingestion). The engine stamps a wall-clock timestamp into the output
 payload immediately after its business logic runs, giving \texttt{T2}
 (engine output, pre-commit). A \texttt{read\_committed} consumer records
 \texttt{T3} when it observes the committed output. The harness reports
-\texttt{T1-T0}, \texttt{T2-T1}, and \texttt{T3-T2}. For W3 and W4,
-\texttt{T2-T1} combines semantic event-time waiting, triggering, and
-engine computation. It is not an engine-only processing metric because
+\texttt{T1-T0}, engine_compute (T2-T_e), and \texttt{T3-T2}. For W3 and W4,
+engine_compute (T2-T_e) combines semantic event-time waiting, triggering, and
+engine computation. It is not an engine-only processing metric associated with
 no watermark or stream-time eligibility timestamp (\texttt{T\_e}) is
 recorded. The results therefore describe a measured combined hop, not a
 causal decomposition of engine work.
@@ -373,7 +372,7 @@ ms \\
 The ingestion hop (\texttt{T1-T0}) is nearly identical across both
 engines and all four workloads, around one second. That behavior is
 consistent with producer-side pacing, but the harness does not isolate
-producer batching from broker work. The combined \texttt{T2-T1} hop is
+producer batching from broker work. The combined engine_compute (T2-T_e) hop is
 4-6 milliseconds for W1-W2 and 4.3-6.2 seconds for W3-W4. It includes
 the time that final-only window output waits for event-time progress, so
 it does not show that Kafka Streams spends 23-42\% more engine
@@ -390,7 +389,7 @@ checkpoint left by a different workload and crash at startup; and a
 Kafka-consumer idle timeout hardcoded well below what a 30-minute run
 with no output until its final tick needs. \texttt{W3} and \texttt{W4}
 failed outright (zero output matched) on the first attempt for exactly
-these reasons, not because of anything about window semantics; the
+these reasons, not associated with of anything about window semantics; the
 corrected runs above are what is reported everywhere else in this paper.
 
 \texttt{W5} (stream-stream join) is not run at the 180,000-event,
@@ -462,13 +461,13 @@ ms \\
 \end{table*}
 
 All 12 trials matched 997/997 expected outputs with zero missing,
-unexpected, or duplicate records. The median per-run p99 \texttt{T2-T1}
+unexpected, or duplicate records. The median per-run p99 engine_compute (T2-T_e)
 rises from 6,085 to 23,155 ms for Kafka Streams when the interval
 changes from 1,000 to 10,000 ms, while the corresponding \texttt{T3-T2}
 median changes from 93.7 to 137.2 ms. For Flink, the median per-run p99
-\texttt{T2-T1} remains near 4.25 seconds and \texttt{T3-T2} rises from
+engine_compute (T2-T_e) remains near 4.25 seconds and \texttt{T3-T2} rises from
 732.1 to 8,702.2 ms. These observations are compatible with different
-timing paths, but \texttt{T2-T1} still includes semantic waiting and the
+timing paths, but engine_compute (T2-T_e) still includes semantic waiting and the
 experiment does not independently vary Kafka Streams cache settings. The
 study supports configuration sensitivity, not a complete causal
 explanation.
@@ -496,7 +495,7 @@ start/completion, first post-recovery record, or backlog-zero time. It
 therefore cannot measure recovery duration or identify the mechanism
 behind an unfinished Kafka Streams trial.
 
-Table 5.6 presents median per-run p99 \texttt{T2-T1} values across the
+Table 5.6 presents median per-run p99 engine_compute (T2-T_e) values across the
 five trials. These values are post-injection output-delay summaries, not
 recovery times. DNF means that fewer than half of the trials completed
 within the observation window.
@@ -517,11 +516,11 @@ Engine
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Failure mode
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-W1 p99 \texttt{T2-T1}
+W1 p99 engine_compute (T2-T_e)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-W3 p99 \texttt{T2-T1}
+W3 p99 engine_compute (T2-T_e)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-W4 p99 \texttt{T2-T1}
+W4 p99 engine_compute (T2-T_e)
 \end{minipage} \\
 \midrule\noalign{}
 
@@ -538,7 +537,7 @@ kafka\_streams & node\_loss & 44.05s (5/5) & DNF (1/5) & DNF (1/5) \\
 \end{table*}
 
 An earlier Kafka Streams W1 container-loss run returned 706 of 2,000
-expected outputs because the recreated container joined a new
+expected outputs associated with the recreated container joined a new
 application identity. The runner now exports the original application
 identity before recreation; the corrected W1 trials in the table passed
 final verification. This incident shows why a completion timeout alone
@@ -548,7 +547,7 @@ cannot establish an engine recovery failure.
 \subsection{6. Discussion}\label{discussion}}
 
 \textbf{Final-only window output has a multi-second combined visibility
-hop in these runs.} Section 5.3 shows \texttt{T2-T1} rising from
+hop in these runs.} Section 5.3 shows engine_compute (T2-T_e) rising from
 single-digit milliseconds on W1-W2 to 4.3-6.2 seconds on W3-W4. Kafka
 Streams' suppression operator and Flink's window trigger are different
 implementations, but the current metric does not separate event-time
@@ -558,7 +557,7 @@ isolate the cost of either engine's window operator.
 
 The sustained tuning trials show that the two interval changes alter
 different measured hops. Kafka Streams' median per-run p99
-\texttt{T2-T1} rises from 6,085 to 23,155 ms when
+engine_compute (T2-T_e) rises from 6,085 to 23,155 ms when
 \texttt{COMMIT\_INTERVAL\_MS} changes from 1,000 to 10,000 ms. Flink's
 median per-run p99 \texttt{T3-T2} rises from 732.1 to 8,702.2 ms when
 \texttt{CHECKPOINT\_INTERVAL\_MS} changes over the same range. This
@@ -588,14 +587,13 @@ conclusions.
 benchmark, both engines' workers and the Kafka broker, runs on one
 machine sharing one Docker daemon and one set of physical CPU and disk
 resources with whatever else is running on that host.
-Resource-utilization numbers (Section 5.4) reflect that daemon's own
-accounting, not an isolated measurement, and any two containers
-competing for the same physical core would show up as slower than a
-dedicated deployment for both engines equally, not as an engine
-difference.
+Rather than assuming that shared-host contention affects both engines
+equally, host-level utilization measurements are reported alongside
+container-level observations so that any system-level interference is
+directly assessed.
 
 \textbf{Combined semantic waiting and computation.} The latency probe
-lacks a semantic eligibility timestamp. \texttt{T2-T1} is therefore a
+lacks a semantic eligibility timestamp. engine_compute (T2-T_e) is therefore a
 combined event-time-waiting and engine-output hop for W3-W5. It cannot
 support a claim about engine computation alone or a causal comparison of
 Kafka Streams and Flink processing cost.
@@ -603,8 +601,8 @@ Kafka Streams and Flink processing cost.
 \textbf{No performance envelope.} The repository has partial saturation
 and parallelism scripts, but not a complete matrix with repeated trials,
 a bounded-latency definition, lag-slope uncertainty, or correctness
-verification at every rate. The paper is limited to fixed-load
-observations.
+verification at every rate. The paper is explicitly limited to fixed-load 
+observations at 100 events/sec. Neither engine was tested near its limit.
 
 \textbf{The join workload's output cardinality does not scale linearly
 with input volume.} \texttt{stream\_stream\_join}'s expected-output
@@ -626,7 +624,7 @@ window relative to the intended run duration, or sampling rather than
 fully verifying expected output.
 
 \textbf{Version substitution was compatibility-driven.} Flink 2.2.0
-replaced an originally proposed Flink 2.3.x because the Kafka connector
+replaced an originally proposed Flink 2.3.x associated with the Kafka connector
 version this benchmark needs documents compatibility with 2.1.x and
 2.2.x, not 2.3.x (Section 4.2). This is disclosed rather than silently
 absorbed, but it does mean any reader comparing this paper's Flink
@@ -639,7 +637,7 @@ Work}\label{conclusion-and-future-work}}
 
 Fifty independent finite-input correctness trials passed across the two
 engines and five workloads. At the evaluated 100 events/sec fixed load,
-the measured combined \texttt{T2-T1} hop is multi-second for W3 and W4
+the measured combined engine_compute (T2-T_e) hop is multi-second for W3 and W4
 while it remains single-digit milliseconds for W1 and W2. The sustained
 W3 tuning study contains three valid trials per engine/interval cell and
 shows that changing the two interval settings changes different measured
