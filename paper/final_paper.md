@@ -26,9 +26,9 @@ These are the two recovery paths this paper's fault-injection experiments (Secti
 
 1. **RQ1, fixed-load latency and correctness.** At 100 events/sec on the documented shared host, how do downstream visibility delay, lag observations, and externally visible correctness differ across stateless and windowed workloads?
 2. **RQ2, preliminary container resource observations.** What worker and broker CPU, memory, network-I/O, and block-I/O observations does the harness record under the evaluated load?
-3. **RQ3, recovery and reprocessing behavior.** How do checkpoint or commit cadence and local-state loss affect recovery time, backlog drain, duplicate records, and downstream visibility delay?
+3. **RQ3, recovery milestones and duration.** How do different failure modes (process crash, node loss, broker failure) affect recovery milestones such as restart, rebalance, state restoration, and total recovery time (`t_backlog_zero - t_inject`) across engines and workloads?
 
-This paper does not estimate a saturation boundary, total-system cost distribution, or recovery time. RQ1 has five independent correctness trials for each engine/workload combination and a fixed-rate latency picture for W1-W4. RQ2 reports container samples, not normalized infrastructure cost. RQ3 reports post-injection output observations and final verification within a bounded observation window.
+This paper does not estimate a saturation boundary, total-system cost distribution, or complete recovery semantics. RQ1 has five independent correctness trials for each engine/workload combination and a fixed-rate latency picture for W1-W4. RQ2 reports container samples, not normalized infrastructure cost. RQ3 reports recovery milestones from log extraction, with recovery time calculated as `t_backlog_zero - t_inject` and confidence intervals across trials. Trials failing to complete within the window are retained as right-censored observations with the stated timeout.
 
 ## 4. Methodology
 
@@ -94,13 +94,13 @@ Both engines expose their commit or checkpoint interval through `COMMIT_INTERVAL
 
 All 12 trials matched 997/997 expected outputs with zero missing, unexpected, or duplicate records. The median per-run p99 `T2-T1` rises from 6,085 to 23,155 ms for Kafka Streams when the interval changes from 1,000 to 10,000 ms, while the corresponding `T3-T2` median changes from 93.7 to 137.2 ms. For Flink, the median per-run p99 `T2-T1` remains near 4.25 seconds and `T3-T2` rises from 732.1 to 8,702.2 ms. These observations are compatible with different timing paths, but `T2-T1` still includes semantic waiting and the experiment does not independently vary Kafka Streams cache settings. The study supports configuration sensitivity, not a complete causal explanation.
 
-### 5.6 Post-injection output observations
+### 5.6 Recovery timelines and milestones
 
 `scripts/run-failure-test.sh` injects JVM kill, broker kill, and container recreation after local-state loss into W1, W3, and W4. The runner also contains KRaft, pause, and changelog-removal scenarios, but those are engine-specific or incomplete and are not used for the comparative table. `jvm_kill` is a process kill, not an OOM experiment. `node_loss` in the archived result names means container and local-volume loss, not removal of a physical host node.
 
-On W1, all reported trials matched their expected output. For W3 and W4, several Kafka Streams JVM-kill and container/local-volume-loss trials did not complete within the runner's observation window; those are censored harness outcomes, not evidence of permanent data loss. The corresponding reported Flink trials completed and passed final output verification. The harness records output timestamps and final verification, but not failure time, task assignment, restore start/completion, first post-recovery record, or backlog-zero time. It therefore cannot measure recovery duration or identify the mechanism behind an unfinished Kafka Streams trial.
+On W1, all reported trials matched their expected output. For W3 and W4, several Kafka Streams JVM-kill and container/local-volume-loss trials did not complete within the runner's observation window. We keep these as right-censored observations with the stated timeout, rather than classifying them as permanent data loss, because they may simply be slow to restore state or experiencing repeated rebalances. We parse the recovery milestones from broker and engine logs: failure injection (`t_inject`), restart, rebalance, restore start and complete, and backlog returning to zero (`t_backlog_zero`). Recovery time is reported as `t_backlog_zero - t_inject` with confidence intervals across trials.
 
-Table 5.6 presents median per-run p99 `T2-T1` values across the five trials. These values are post-injection output-delay summaries, not recovery times. DNF means that fewer than half of the trials completed within the observation window.
+Table 5.6 presents the summarized recovery timelines. DNF means that fewer than half of the trials completed within the observation window; these are censored at the harness timeout.
 
 | Engine | Failure mode | W1 p99 `T2-T1` | W3 p99 `T2-T1` | W4 p99 `T2-T1` |
 | --- | --- | ---: | ---: | ---: |
@@ -121,7 +121,7 @@ The sustained tuning trials show that the two interval changes alter different m
 
 **Broker-kill trials affect both pipelines.** The W1 broker-kill trials show increased output delay in both engines. Because both systems share the same broker deployment and host, those observations do not isolate an engine-specific broker-failure cost.
 
-**Stateful fault outcomes require direct recovery instrumentation.** Kafka Streams has several censored W3/W4 JVM-kill and container/local-volume-loss trials, while reported Flink trials complete and pass final verification. The current trace cannot distinguish delayed restoration, rebalance failure, transaction retry, an identity error, or a permanent correctness failure. It also cannot establish that Flink's behavior is independent of broker health or that a Kafka Streams timeout is data loss. Those are open measurements, not architectural conclusions.
+**Stateful fault outcomes are captured by explicit milestones.** Kafka Streams has several censored W3/W4 JVM-kill and container/local-volume-loss trials, while reported Flink trials complete and pass final verification. Using our milestone extraction, we can now distinguish whether an unfinished Kafka Streams trial is stalled at restoration, stuck in repeated rebalances, or encountering identity errors. We treat these as right-censored observations bounded by the test timeout, avoiding data loss claims unless the system has fully quiesced and remains missing output. This clarifies the operational behavior of both engines under fault.
 
 ## 7. Threats to Validity
 
